@@ -1,0 +1,49 @@
+# Environnements Python - PRIORITÉ 1
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Flutter
+frontend/build/
+frontend/.dart_tool/
+frontend/.flutter-plugins-dependencies
+frontend/.flutter-plugins
+
+# MLflow
+notebooks/mlruns/
+
+# Fichiers lourds
+*.mp4
+*.avi
+*.dll
+*.so
+*.dylib
+objects.txt
+hs_err_pid*.log
+tmp.txt
+
+# Données
+*.csv
+backend/dataset_ProjetML_2026.csv
+
+# Images de démo (garder assets/ Flutter)
+emulator_capture_hq.png
+questioncarte.png
+reponsecarte.png
+
+# Secrets
+.env
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.dart_tool/
+
+# DVC gérera les données
+data/
