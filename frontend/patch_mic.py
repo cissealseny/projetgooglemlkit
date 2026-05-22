@@ -9,7 +9,7 @@ with open(file_path, "r", encoding="utf-8") as f:
 if "import 'package:speech_to_text/speech_to_text.dart' as stt;" not in content:
     content = content.replace(
         "import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';",
-        "import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';\nimport 'package:speech_to_text/speech_to_text.dart' as stt;"
+        "import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';\nimport 'package:speech_to_text/speech_to_text.dart' as stt;",
     )
 
 # 2. Add State Variables
@@ -23,7 +23,7 @@ var_block = """class _ChatViewState extends State<_ChatView> {
 
 content = content.replace(
     "class _ChatViewState extends State<_ChatView> {\n  final _messageController = TextEditingController();\n  final _scrollController = ScrollController();\n  String _selectedModel = 'ollama:mistral:7b';\n  int _nearbyRadiusMeters = 2500;",
-    var_block
+    var_block,
 )
 
 # 3. Add _toggleListening Method
@@ -58,7 +58,7 @@ toggle_method = """  Future<void> _toggleListening() async {
   }
 
   void _scrollToBottom() {"""
-  
+
 content = content.replace("  void _scrollToBottom() {", toggle_method)
 
 # 4. Add the Mic Button

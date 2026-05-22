@@ -10,12 +10,14 @@ for index, line in enumerate(lines):
     new_lines.append(line)
     if "child: Icon(Icons.sentiment_satisfied_alt_rounded," in line:
         has_matched = True
-        
+
 for index in range(len(new_lines)):
     if "child: Icon(Icons.sentiment_satisfied_alt_rounded," in new_lines[index]:
         # Insert 3 lines down
         insert_idx = index + 4
-        new_lines.insert(insert_idx, """                const SizedBox(width: 8),
+        new_lines.insert(
+            insert_idx,
+            """                const SizedBox(width: 8),
                 GestureDetector(
                   onTap: _toggleListening,
                   child: Container(
@@ -41,9 +43,10 @@ for index in range(len(new_lines)):
                         color: _isListening ? Colors.redAccent : features.generative,
                         size: 22),
                   ),
-                ),\n""")
+                ),\n""",
+        )
         break
-        
+
 with open(file_path, "w", encoding="utf-8") as f:
     f.writelines(new_lines)
 print("Done")

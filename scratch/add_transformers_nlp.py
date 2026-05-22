@@ -2,7 +2,9 @@ import json
 from pathlib import Path
 
 # Path to the notebook
-NB_PATH = Path(r"c:\Users\DELL\Downloads\GoogleMLKit\notebooks\03b_nlp_word2vec_fasttext.ipynb")
+NB_PATH = Path(
+    r"c:\Users\DELL\Downloads\GoogleMLKit\notebooks\03b_nlp_word2vec_fasttext.ipynb"
+)
 
 print("Reading NLP notebook...")
 with open(NB_PATH, "r", encoding="utf-8") as f:
@@ -11,13 +13,15 @@ with open(NB_PATH, "r", encoding="utf-8") as f:
 # Find the index of the cell containing the comparison table (starts with "## 4. Tableau comparatif")
 insert_idx = -1
 for idx, cell in enumerate(nb["cells"]):
-    if cell["cell_type"] == "markdown" and any("## 4. Tableau comparatif" in line for line in cell.get("source", [])):
+    if cell["cell_type"] == "markdown" and any(
+        "## 4. Tableau comparatif" in line for line in cell.get("source", [])
+    ):
         insert_idx = idx
         break
 
 if insert_idx != -1:
     print(f"Found insertion point at index {insert_idx}")
-    
+
     transformer_md = {
         "cell_type": "markdown",
         "id": "transformer_md_cell",
@@ -27,10 +31,10 @@ if insert_idx != -1:
             "\n",
             "Pour surpasser les baselines BoW, TF-IDF, Word2Vec et FastText, nous intégrons un modèle de Deep Learning basé sur l'architecture Transformer.\n",
             "Nous utilisons `SentenceTransformers` avec le modèle multilingue performant **`paraphrase-multilingual-MiniLM-L12-v2`** (qui supporte parfaitement le français). \n",
-            "Contrairement à Word2Vec/FastText qui font la moyenne des vecteurs de mots sans contexte, le Transformer capture le contexte sémantique global de la phrase entière."
-        ]
+            "Contrairement à Word2Vec/FastText qui font la moyenne des vecteurs de mots sans contexte, le Transformer capture le contexte sémantique global de la phrase entière.",
+        ],
     }
-    
+
     transformer_code = {
         "cell_type": "code",
         "execution_count": None,
@@ -72,18 +76,18 @@ if insert_idx != -1:
             "except ImportError as e:\n",
             "    print(f'⚠️ sentence-transformers ou torch non disponible: {e}')\n",
             "except Exception as e:\n",
-            "    print(f'⚠️ Erreur lors de l\\'exécution: {e}')\n"
-        ]
+            "    print(f'⚠️ Erreur lors de l\\'exécution: {e}')\n",
+        ],
     }
-    
+
     # Insert new cells
     nb["cells"].insert(insert_idx, transformer_md)
     nb["cells"].insert(insert_idx + 1, transformer_code)
-    
+
     # Save the modified notebook
     with open(NB_PATH, "w", encoding="utf-8") as f:
         json.dump(nb, f, indent=1, ensure_ascii=False)
-    
+
     print("Notebook modified and saved successfully!")
 else:
     print("Error: Could not find insert point in notebook!")

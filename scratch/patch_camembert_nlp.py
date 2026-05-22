@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
 
-nb_path = Path(r"c:\Users\DELL\Downloads\GoogleMLKit\notebooks\03b_nlp_word2vec_fasttext.ipynb")
+nb_path = Path(
+    r"c:\Users\DELL\Downloads\GoogleMLKit\notebooks\03b_nlp_word2vec_fasttext.ipynb"
+)
 
 print("Reading NLP notebook...")
 with open(nb_path, "r", encoding="utf-8") as f:
@@ -11,19 +13,26 @@ patched_md = False
 patched_code = False
 
 for cell in nb["cells"]:
-    if cell["cell_type"] == "markdown" and any("## 3b. Transformers / CamemBERT" in line for line in cell.get("source", [])):
+    if cell["cell_type"] == "markdown" and any(
+        "## 3b. Transformers / CamemBERT" in line for line in cell.get("source", [])
+    ):
         print("Found Transformer MD cell, updating...")
         cell["source"] = [
             "## 3b. Transformers / CamemBERT (PyTorch & Hugging Face)\n",
             "\n",
             "Pour surpasser les baselines traditionnelles (BoW, TF-IDF) et sémantiques statiques (Word2Vec, FastText), nous intégrons un modèle de Deep Learning basé sur l'architecture Transformer.\n",
             "Nous utilisons le modèle de référence francophone **`CamemBERT-base`** déjà entièrement pré-téléchargé dans notre cache local (utilisation 100% offline).\n",
-            "Les embeddings de phrases sont extraits par mean pooling sur la dernière couche de CamemBERT, puis un RandomForestClassifier est entraîné sur ces représentations denses."
+            "Les embeddings de phrases sont extraits par mean pooling sur la dernière couche de CamemBERT, puis un RandomForestClassifier est entraîné sur ces représentations denses.",
         ]
         patched_md = True
-        
-    elif cell["cell_type"] == "code" and any("from sentence_transformers import SentenceTransformer" in line for line in cell.get("source", [])):
-        print("Found SentenceTransformer code cell, replacing with CamemBERT offline code...")
+
+    elif cell["cell_type"] == "code" and any(
+        "from sentence_transformers import SentenceTransformer" in line
+        for line in cell.get("source", [])
+    ):
+        print(
+            "Found SentenceTransformer code cell, replacing with CamemBERT offline code..."
+        )
         cell["source"] = [
             "import os\n",
             "import torch\n",
@@ -75,7 +84,7 @@ for cell in nb["cells"]:
             "    print(f\"{'CamemBERT + RF':<30} acc={acc:.4f}  f1={f1:.4f}\")\n",
             "    \n",
             "except Exception as e:\n",
-            "    print(f'⚠️ Erreur lors de l\\'exécution de CamemBERT: {e}')\n"
+            "    print(f'⚠️ Erreur lors de l\\'exécution de CamemBERT: {e}')\n",
         ]
         patched_code = True
 

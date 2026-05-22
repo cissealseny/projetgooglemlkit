@@ -7,7 +7,6 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
-
 PRIMARY = RGBColor(11, 45, 92)
 SECONDARY = RGBColor(20, 131, 182)
 ACCENT = RGBColor(245, 166, 35)
@@ -25,17 +24,23 @@ def style_text(run, size=20, bold=False, color=TEXT_DARK, name="Calibri"):
 
 
 def add_header_band(slide, title, subtitle=None):
-    band = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.33), Inches(1.25))
+    band = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.33), Inches(1.25)
+    )
     band.fill.solid()
     band.fill.fore_color.rgb = PRIMARY
     band.line.fill.background()
 
-    stripe = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(1.12), Inches(13.33), Inches(0.13))
+    stripe = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(0), Inches(1.12), Inches(13.33), Inches(0.13)
+    )
     stripe.fill.solid()
     stripe.fill.fore_color.rgb = SECONDARY
     stripe.line.fill.background()
 
-    title_box = slide.shapes.add_textbox(Inches(0.6), Inches(0.25), Inches(10.4), Inches(0.52))
+    title_box = slide.shapes.add_textbox(
+        Inches(0.6), Inches(0.25), Inches(10.4), Inches(0.52)
+    )
     title_tf = title_box.text_frame
     title_tf.clear()
     p = title_tf.paragraphs[0]
@@ -44,7 +49,9 @@ def add_header_band(slide, title, subtitle=None):
     style_text(r, size=30, bold=True, color=TEXT_LIGHT)
 
     if subtitle:
-        sub_box = slide.shapes.add_textbox(Inches(0.6), Inches(0.73), Inches(10.8), Inches(0.35))
+        sub_box = slide.shapes.add_textbox(
+            Inches(0.6), Inches(0.73), Inches(10.8), Inches(0.35)
+        )
         sub_tf = sub_box.text_frame
         sub_tf.clear()
         p_sub = sub_tf.paragraphs[0]
@@ -52,7 +59,13 @@ def add_header_band(slide, title, subtitle=None):
         r_sub.text = subtitle
         style_text(r_sub, size=15, color=RGBColor(214, 228, 243))
 
-    badge = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(11.25), Inches(0.26), Inches(1.45), Inches(0.56))
+    badge = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(11.25),
+        Inches(0.26),
+        Inches(1.45),
+        Inches(0.56),
+    )
     badge.fill.solid()
     badge.fill.fore_color.rgb = ACCENT
     badge.line.fill.background()
@@ -66,12 +79,16 @@ def add_header_band(slide, title, subtitle=None):
 
 
 def add_footer(slide, page_number):
-    footer = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(7.24), Inches(13.33), Inches(0.26))
+    footer = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(0), Inches(7.24), Inches(13.33), Inches(0.26)
+    )
     footer.fill.solid()
     footer.fill.fore_color.rgb = BG_LIGHT
     footer.line.fill.background()
 
-    left = slide.shapes.add_textbox(Inches(0.5), Inches(7.24), Inches(7.5), Inches(0.22))
+    left = slide.shapes.add_textbox(
+        Inches(0.5), Inches(7.24), Inches(7.5), Inches(0.22)
+    )
     left_tf = left.text_frame
     left_tf.clear()
     lp = left_tf.paragraphs[0]
@@ -79,7 +96,9 @@ def add_footer(slide, page_number):
     lrun.text = "Eco-Smart Classifier - Flutter + FastAPI/Django"
     style_text(lrun, size=10, color=RGBColor(94, 104, 117))
 
-    right = slide.shapes.add_textbox(Inches(12.45), Inches(7.24), Inches(0.45), Inches(0.22))
+    right = slide.shapes.add_textbox(
+        Inches(12.45), Inches(7.24), Inches(0.45), Inches(0.22)
+    )
     right_tf = right.text_frame
     right_tf.clear()
     rp = right_tf.paragraphs[0]
@@ -96,7 +115,13 @@ def set_speaker_notes(slide, notes_text):
 
 
 def add_bullet_content(slide, bullets):
-    box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.7), Inches(1.55), Inches(12.0), Inches(5.35))
+    box = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(0.7),
+        Inches(1.55),
+        Inches(12.0),
+        Inches(5.35),
+    )
     box.fill.solid()
     box.fill.fore_color.rgb = BG_LIGHT
     box.line.color.rgb = RGBColor(217, 225, 236)
@@ -138,7 +163,13 @@ def add_picture_fit(slide, image_path, x, y, w, h, pad=0.08):
         pic_x = inner_x + (inner_w - pic_w) / 2
         pic_y = inner_y
 
-    slide.shapes.add_picture(str(image_path), Inches(pic_x), Inches(pic_y), width=Inches(pic_w), height=Inches(pic_h))
+    slide.shapes.add_picture(
+        str(image_path),
+        Inches(pic_x),
+        Inches(pic_y),
+        width=Inches(pic_w),
+        height=Inches(pic_h),
+    )
 
 
 def image_exists(image_path):
@@ -146,7 +177,9 @@ def image_exists(image_path):
 
 
 def add_screenshot_layout(slide, subtitle, notes, image_left=None, image_right=None):
-    title_box = slide.shapes.add_textbox(Inches(0.85), Inches(1.55), Inches(12.0), Inches(0.45))
+    title_box = slide.shapes.add_textbox(
+        Inches(0.85), Inches(1.55), Inches(12.0), Inches(0.45)
+    )
     ttf = title_box.text_frame
     ttf.clear()
     p = ttf.paragraphs[0]
@@ -155,7 +188,13 @@ def add_screenshot_layout(slide, subtitle, notes, image_left=None, image_right=N
     style_text(run, size=22, bold=True, color=PRIMARY)
 
     left_x, left_y, left_w, left_h = 0.85, 2.15, 5.9, 3.75
-    left = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left_x), Inches(left_y), Inches(left_w), Inches(left_h))
+    left = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(left_x),
+        Inches(left_y),
+        Inches(left_w),
+        Inches(left_h),
+    )
     left.fill.solid()
     left.fill.fore_color.rgb = RGBColor(247, 250, 255)
     left.line.color.rgb = SECONDARY
@@ -170,7 +209,13 @@ def add_screenshot_layout(slide, subtitle, notes, image_left=None, image_right=N
         add_picture_fit(slide, image_left, left_x, left_y, left_w, left_h)
 
     right_x, right_y, right_w, right_h = 6.58, 2.15, 5.9, 3.75
-    right = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(right_x), Inches(right_y), Inches(right_w), Inches(right_h))
+    right = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(right_x),
+        Inches(right_y),
+        Inches(right_w),
+        Inches(right_h),
+    )
     right.fill.solid()
     right.fill.fore_color.rgb = RGBColor(247, 250, 255)
     right.line.color.rgb = SECONDARY
@@ -184,7 +229,13 @@ def add_screenshot_layout(slide, subtitle, notes, image_left=None, image_right=N
     if image_exists(image_right):
         add_picture_fit(slide, image_right, right_x, right_y, right_w, right_h)
 
-    notes_box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.85), Inches(6.1), Inches(11.63), Inches(0.72))
+    notes_box = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(0.85),
+        Inches(6.1),
+        Inches(11.63),
+        Inches(0.72),
+    )
     notes_box.fill.solid()
     notes_box.fill.fore_color.rgb = RGBColor(255, 248, 231)
     notes_box.line.color.rgb = RGBColor(240, 204, 130)
@@ -198,22 +249,30 @@ def add_screenshot_layout(slide, subtitle, notes, image_left=None, image_right=N
 
 def add_title_slide(prs):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.33), Inches(7.5))
+    bg = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.33), Inches(7.5)
+    )
     bg.fill.solid()
     bg.fill.fore_color.rgb = PRIMARY
     bg.line.fill.background()
 
-    glow = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(8.9), Inches(-0.95), Inches(5.6), Inches(5.6))
+    glow = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL, Inches(8.9), Inches(-0.95), Inches(5.6), Inches(5.6)
+    )
     glow.fill.solid()
     glow.fill.fore_color.rgb = SECONDARY
     glow.line.fill.background()
 
-    glow2 = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(-1.2), Inches(4.6), Inches(4.9), Inches(4.9))
+    glow2 = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL, Inches(-1.2), Inches(4.6), Inches(4.9), Inches(4.9)
+    )
     glow2.fill.solid()
     glow2.fill.fore_color.rgb = RGBColor(15, 87, 141)
     glow2.line.fill.background()
 
-    title = slide.shapes.add_textbox(Inches(0.9), Inches(1.8), Inches(10.6), Inches(1.35))
+    title = slide.shapes.add_textbox(
+        Inches(0.9), Inches(1.8), Inches(10.6), Inches(1.35)
+    )
     tf = title.text_frame
     tf.clear()
     p = tf.paragraphs[0]
@@ -233,7 +292,13 @@ def add_title_slide(prs):
     start_x = 0.95
     for label in chips:
         w = 2.2
-        chip = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(start_x), Inches(4.35), Inches(w), Inches(0.53))
+        chip = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE,
+            Inches(start_x),
+            Inches(4.35),
+            Inches(w),
+            Inches(0.53),
+        )
         chip.fill.solid()
         chip.fill.fore_color.rgb = RGBColor(228, 239, 250)
         chip.line.fill.background()
@@ -246,7 +311,9 @@ def add_title_slide(prs):
         style_text(cr, size=13, bold=True, color=PRIMARY)
         start_x += w + 0.25
 
-    footer = slide.shapes.add_textbox(Inches(0.95), Inches(6.95), Inches(6.5), Inches(0.3))
+    footer = slide.shapes.add_textbox(
+        Inches(0.95), Inches(6.95), Inches(6.5), Inches(0.3)
+    )
     ftf = footer.text_frame
     ftf.clear()
     fp = ftf.paragraphs[0]
@@ -268,10 +335,14 @@ def add_bullets_slide(prs, page_number, title, subtitle, bullets, notes):
     set_speaker_notes(slide, notes)
 
 
-def add_screenshot_slide(prs, page_number, title, subtitle, notes, image_left=None, image_right=None):
+def add_screenshot_slide(
+    prs, page_number, title, subtitle, notes, image_left=None, image_right=None
+):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_header_band(slide, title)
-    add_screenshot_layout(slide, subtitle, notes, image_left=image_left, image_right=image_right)
+    add_screenshot_layout(
+        slide, subtitle, notes, image_left=image_left, image_right=image_right
+    )
     add_footer(slide, page_number)
     set_speaker_notes(slide, notes)
 

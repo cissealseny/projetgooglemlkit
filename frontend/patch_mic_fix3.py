@@ -25,7 +25,7 @@ content = re.sub(
         cancelOnError: true,
         partialResults: true,
       );""",
-    content
+    content,
 )
 
 with open(file_path, "w", encoding="utf-8") as f:

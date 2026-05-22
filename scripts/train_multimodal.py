@@ -47,7 +47,10 @@ def main() -> None:
     model = Pipeline(
         [
             ("preprocessor", preprocessor),
-            ("clf", RandomForestClassifier(n_estimators=200, max_depth=20, random_state=42)),
+            (
+                "clf",
+                RandomForestClassifier(n_estimators=200, max_depth=20, random_state=42),
+            ),
         ]
     )
 

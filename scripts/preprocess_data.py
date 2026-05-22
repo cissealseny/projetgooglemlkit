@@ -9,7 +9,9 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 RANDOM_STATE = 42
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "backend" / "dataset_ProjetML_2026.csv"
+DATA_PATH = (
+    Path(__file__).resolve().parents[1] / "backend" / "dataset_ProjetML_2026.csv"
+)
 OUTPUT_DIR = Path(__file__).resolve().parents[1] / "data" / "processed"
 
 NUMERIC_COLS = [
@@ -71,7 +73,9 @@ def main() -> None:
     if set(["Poids", "Volume"]).issubset(df_fe.columns):
         df_fe["Densite"] = df_fe["Poids"] / df_fe["Volume"].replace(0, np.nan)
     if set(["Conductivite", "Opacite"]).issubset(df_fe.columns):
-        df_fe["Cond_Opacite_Ratio"] = df_fe["Conductivite"] / df_fe["Opacite"].replace(0, np.nan)
+        df_fe["Cond_Opacite_Ratio"] = df_fe["Conductivite"] / df_fe["Opacite"].replace(
+            0, np.nan
+        )
     if "Volume" in df_fe.columns:
         df_fe["Log_Volume"] = np.log1p(df_fe["Volume"])
 

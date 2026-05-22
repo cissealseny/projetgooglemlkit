@@ -5,19 +5,20 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+from sklearn.cluster import KMeans
 from sklearn.compose import ColumnTransformer
+from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score, r2_score, mean_absolute_error
+from sklearn.metrics import accuracy_score, mean_absolute_error, r2_score
 from sklearn.pipeline import Pipeline
-from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data" / "processed"
 MODEL_DIR = ROOT / "notebooks"
 METRICS_PATH = ROOT / "data" / "metrics.json"
+
 
 def main() -> None:
     # 1. Charger les données d'entraînement et de test
@@ -62,7 +63,10 @@ def main() -> None:
     clf_model = Pipeline(
         [
             ("preprocessor", preprocessor),
-            ("clf", RandomForestClassifier(n_estimators=200, max_depth=20, random_state=42)),
+            (
+                "clf",
+                RandomForestClassifier(n_estimators=200, max_depth=20, random_state=42),
+            ),
         ]
     )
     clf_model.fit(X_train, y_train_clf)
@@ -75,7 +79,10 @@ def main() -> None:
     reg_model = Pipeline(
         [
             ("preprocessor", preprocessor),
-            ("reg", RandomForestRegressor(n_estimators=200, max_depth=20, random_state=42)),
+            (
+                "reg",
+                RandomForestRegressor(n_estimators=200, max_depth=20, random_state=42),
+            ),
         ]
     )
     reg_model.fit(X_train, y_train_reg)
@@ -87,35 +94,37 @@ def main() -> None:
     # 4. Charger dataset_clean_full pour le clustering
     print("Entraînement du clustering K-Means et PCA...")
     full_df = pd.read_csv(DATA_DIR / "dataset_clean_full.csv")
-    
+
     # Extraire les colonnes numériques pour le clustering (les mêmes que num_cols)
     # Attends, dans le notebook 4, X contient toutes les colonnes numériques standardisées de full_df sauf Categorie et Prix_Revente
     label_cols = [c for c in [target_clf, target_reg] if c in full_df.columns]
-    X_clustering = full_df.drop(columns=label_cols).select_dtypes(include=["number"]).copy()
-    
+    X_clustering = (
+        full_df.drop(columns=label_cols).select_dtypes(include=["number"]).copy()
+    )
+
     # Ajuster le StandardScaler
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X_clustering)
-    
+
     # Entraîner K-Means
     kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
     kmeans.fit(X_scaled)
-    
+
     # Entraîner la PCA
     pca = PCA(n_components=2, random_state=42)
     pca.fit(X_scaled)
-    
+
     print("Clustering entraîné avec succès !")
 
     # 5. Sauvegarde de tous les modèles dans le dossier notebooks/
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     joblib.dump(clf_model, MODEL_DIR / "multimodal_model.pkl")
     joblib.dump(reg_model, MODEL_DIR / "regression_model.pkl")
     joblib.dump(scaler, MODEL_DIR / "scaler_model.pkl")
     joblib.dump(kmeans, MODEL_DIR / "kmeans_model.pkl")
     joblib.dump(pca, MODEL_DIR / "pca_model.pkl")
-    
+
     print(f"Tous les modèles ont été sauvegardés avec succès dans : {MODEL_DIR}")
 
     # Enregistrer les métriques globales
@@ -123,10 +132,11 @@ def main() -> None:
     metrics = {
         "classification_accuracy": clf_acc,
         "regression_r2": reg_r2,
-        "regression_mae": reg_mae
+        "regression_mae": reg_mae,
     }
     METRICS_PATH.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     print(f"Métriques enregistrées dans : {METRICS_PATH}")
+
 
 if __name__ == "__main__":
     main()
