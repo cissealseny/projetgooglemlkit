@@ -5,11 +5,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import ImageAnalysis
-from .serializers import (FaceDetectionRequestSerializer,
-                          ImageAnalysisSerializer,
-                          ImageLabelingRequestSerializer,
-                          ObjectDetectionRequestSerializer,
-                          OCRRequestSerializer)
+from .serializers import (
+    FaceDetectionRequestSerializer,
+    ImageAnalysisSerializer,
+    ImageLabelingRequestSerializer,
+    ObjectDetectionRequestSerializer,
+    OCRRequestSerializer,
+)
 from .services import vision_service
 
 

@@ -4,12 +4,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import TextAnalysis
-from .serializers import (ClassificationRequestSerializer,
-                          EntityExtractionRequestSerializer,
-                          LanguageDetectionRequestSerializer,
-                          SentimentRequestSerializer,
-                          SummarizationRequestSerializer,
-                          TextAnalysisSerializer, TranslationRequestSerializer)
+from .serializers import (
+    ClassificationRequestSerializer,
+    EntityExtractionRequestSerializer,
+    LanguageDetectionRequestSerializer,
+    SentimentRequestSerializer,
+    SummarizationRequestSerializer,
+    TextAnalysisSerializer,
+    TranslationRequestSerializer,
+)
 from .services import nlp_service
 
 

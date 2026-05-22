@@ -5,9 +5,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Quiz, QuizAttempt, QuizQuestion
-from .serializers import (QuizAttemptSerializer, QuizGenerateRequestSerializer,
-                          QuizGradeRequestSerializer, QuizListSerializer,
-                          QuizSerializer)
+from .serializers import (
+    QuizAttemptSerializer,
+    QuizGenerateRequestSerializer,
+    QuizGradeRequestSerializer,
+    QuizListSerializer,
+    QuizSerializer,
+)
 from .services import quiz_service
 
 

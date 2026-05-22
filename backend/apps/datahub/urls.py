@@ -1,8 +1,13 @@
 from django.urls import path
 
-from .views import (CollectFacebookView, CollectGoogleMapsView,
-                    CollectYouTubeView, GooglePlacePhotoProxyView,
-                    IngestJobListView, RawRecordListView)
+from .views import (
+    CollectFacebookView,
+    CollectGoogleMapsView,
+    CollectYouTubeView,
+    GooglePlacePhotoProxyView,
+    IngestJobListView,
+    RawRecordListView,
+)
 
 urlpatterns = [
     path(

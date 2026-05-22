@@ -9,10 +9,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import IngestJob, RawRecord
-from .serializers import (CollectFacebookRequestSerializer,
-                          CollectGoogleMapsRequestSerializer,
-                          CollectYouTubeRequestSerializer, IngestJobSerializer,
-                          RawRecordSerializer)
+from .serializers import (
+    CollectFacebookRequestSerializer,
+    CollectGoogleMapsRequestSerializer,
+    CollectYouTubeRequestSerializer,
+    IngestJobSerializer,
+    RawRecordSerializer,
+)
 from .services import data_collection_service
 
 

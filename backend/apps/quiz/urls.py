@@ -1,7 +1,12 @@
 from django.urls import path
 
-from .views import (QuizAttemptLatestView, QuizDetailView, QuizGenerateView,
-                    QuizGradeView, QuizListView)
+from .views import (
+    QuizAttemptLatestView,
+    QuizDetailView,
+    QuizGenerateView,
+    QuizGradeView,
+    QuizListView,
+)
 
 urlpatterns = [
     path("generate/", QuizGenerateView.as_view(), name="quiz-generate"),

@@ -13,11 +13,16 @@ from apps.datahub.models import RawRecord
 from apps.datahub.services import data_collection_service
 
 from .models import Conversation, Generation, Message
-from .serializers import (ChatRequestSerializer,
-                          CodeGenerationRequestSerializer,
-                          ConversationListSerializer, ConversationSerializer,
-                          EmbeddingRequestSerializer, GenerationSerializer,
-                          MessageSerializer, TextGenerationRequestSerializer)
+from .serializers import (
+    ChatRequestSerializer,
+    CodeGenerationRequestSerializer,
+    ConversationListSerializer,
+    ConversationSerializer,
+    EmbeddingRequestSerializer,
+    GenerationSerializer,
+    MessageSerializer,
+    TextGenerationRequestSerializer,
+)
 from .services import generative_service
 
 logger = logging.getLogger(__name__)

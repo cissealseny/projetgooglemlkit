@@ -1,8 +1,13 @@
 from django.urls import path
 
-from .views import (EcoSmartCentersView, EcoSmartClassificationView,
-                    EcoSmartClusterView, EcoSmartEstimationView,
-                    EcoSmartMultimodalView, EcoSmartNlpView)
+from .views import (
+    EcoSmartCentersView,
+    EcoSmartClassificationView,
+    EcoSmartClusterView,
+    EcoSmartEstimationView,
+    EcoSmartMultimodalView,
+    EcoSmartNlpView,
+)
 
 urlpatterns = [
     path("classify/", EcoSmartClassificationView.as_view(), name="eco-classify"),

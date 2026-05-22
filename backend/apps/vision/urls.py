@@ -1,7 +1,12 @@
 from django.urls import path
 
-from .views import (AnalysisHistoryView, FaceDetectionView, ImageLabelingView,
-                    ObjectDetectionView, OCRView)
+from .views import (
+    AnalysisHistoryView,
+    FaceDetectionView,
+    ImageLabelingView,
+    ObjectDetectionView,
+    OCRView,
+)
 
 urlpatterns = [
     path("ocr/", OCRView.as_view(), name="ocr"),

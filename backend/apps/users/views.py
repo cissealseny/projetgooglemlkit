@@ -10,9 +10,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.vision.models import ImageAnalysis
 
 from .models import RecyclingEvent
-from .serializers import (ChangePasswordSerializer, LoginSerializer,
-                          RecyclingEventCreateSerializer, RegisterSerializer,
-                          UserSerializer)
+from .serializers import (
+    ChangePasswordSerializer,
+    LoginSerializer,
+    RecyclingEventCreateSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
 

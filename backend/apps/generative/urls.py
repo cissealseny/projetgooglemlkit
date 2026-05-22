@@ -1,8 +1,14 @@
 from django.urls import path
 
-from .views import (ChatView, CodeGenerationView, ConversationDetailView,
-                    ConversationListView, EmbeddingView, GenerationHistoryView,
-                    TextGenerationView)
+from .views import (
+    ChatView,
+    CodeGenerationView,
+    ConversationDetailView,
+    ConversationListView,
+    EmbeddingView,
+    GenerationHistoryView,
+    TextGenerationView,
+)
 
 urlpatterns = [
     path("chat/", ChatView.as_view(), name="chat"),

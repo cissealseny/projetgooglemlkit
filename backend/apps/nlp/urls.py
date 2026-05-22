@@ -1,8 +1,14 @@
 from django.urls import path
 
-from .views import (ClassificationView, EntityExtractionView,
-                    LanguageDetectionView, NLPHistoryView,
-                    SentimentAnalysisView, SummarizationView, TranslationView)
+from .views import (
+    ClassificationView,
+    EntityExtractionView,
+    LanguageDetectionView,
+    NLPHistoryView,
+    SentimentAnalysisView,
+    SummarizationView,
+    TranslationView,
+)
 
 urlpatterns = [
     path("sentiment/", SentimentAnalysisView.as_view(), name="sentiment"),
