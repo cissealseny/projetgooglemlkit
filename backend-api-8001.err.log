@@ -1,0 +1,6 @@
+INFO:     Started server process [29716]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+C:\Users\DELL\Downloads\GoogleMLKit\backend\.venv\Lib\site-packages\pandas\core\arraylike.py:402: RuntimeWarning: invalid value encountered in log1p
+  result = getattr(ufunc, method)(*inputs, **kwargs)

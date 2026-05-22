@@ -1,0 +1,30 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0C4B4A"/>
+      <stop offset="100%" stop-color="#2E8B57"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7BE495"/>
+      <stop offset="100%" stop-color="#5DB075"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" rx="32" fill="url(#bg)"/>
+  <circle cx="180" cy="120" r="90" fill="url(#glow)" opacity="0.25"/>
+  <circle cx="1020" cy="500" r="120" fill="url(#glow)" opacity="0.18"/>
+  <rect x="120" y="140" width="640" height="320" rx="28" fill="#FFFFFF" opacity="0.08"/>
+  <path d="M280 320c60-90 140-130 220-130 80 0 150 30 210 90" stroke="#7BE495" stroke-width="8" stroke-linecap="round"/>
+  <path d="M370 360c40-60 90-90 150-90 60 0 110 22 160 70" stroke="#CFFFE5" stroke-width="6" stroke-linecap="round"/>
+  <g fill="#FFFFFF">
+    <text x="140" y="220" font-family="Arial" font-size="42" font-weight="700">Eco-smart IA</text>
+    <text x="140" y="270" font-family="Arial" font-size="22" opacity="0.8">Placeholder image IA ecologique</text>
+  </g>
+  <g fill="#F8B84E">
+    <circle cx="900" cy="200" r="36"/>
+    <rect x="860" y="260" width="140" height="70" rx="20"/>
+  </g>
+  <g fill="#FFFFFF" opacity="0.9">
+    <text x="880" y="208" font-family="Arial" font-size="22" font-weight="700">AI</text>
+    <text x="880" y="305" font-family="Arial" font-size="18">Scan</text>
+  </g>
+</svg>

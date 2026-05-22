@@ -1,0 +1,66 @@
+# ============================================================
+# .dockerignore — Eco-Smart Classifier
+# ============================================================
+
+# Version control
+.git
+.github
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.coverage
+htmlcov
+*.egg-info
+
+# Virtual environments
+.venv
+venv
+backend/.venv
+backend/venv
+
+# Frontend (Flutter) — not needed in API image
+frontend
+
+# Notebooks (not needed in production)
+notebooks/*.ipynb
+notebooks/mlruns
+notebooks/mlflow.db
+
+# IDE
+.vscode
+.idea
+*.iml
+
+# DVC
+.dvc
+.dvcignore
+
+# Large files
+*.log
+hs_err_*.log
+objects.txt
+
+# Docs & presentations
+*.pptx
+*.md
+!backend/README.md
+
+# Scratch
+scratch
+
+# Docker
+Dockerfile
+Dockerfile.cloud
+docker-compose*.yml
+
+# Environment files (secrets!)
+.env
+.env.*
+!.env.example
+
+# Data files (dataset is copied explicitly)
+data

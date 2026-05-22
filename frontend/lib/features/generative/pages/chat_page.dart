@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../../../core/di/injection.dart';
@@ -20,19 +20,21 @@ import '../bloc/generative_bloc.dart';
 
 /// Premium Chat Page
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+  final bool isBottomSheet;
+  const ChatPage({super.key, this.isBottomSheet = false});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<GenerativeBloc>(
       create: (_) => getIt<GenerativeBloc>()..add(const CreateConversation()),
-      child: const _ChatView(),
+      child: _ChatView(isBottomSheet: isBottomSheet),
     );
   }
 }
 
 class _ChatView extends StatefulWidget {
-  const _ChatView();
+  final bool isBottomSheet;
+  const _ChatView({this.isBottomSheet = false});
 
   @override
   State<_ChatView> createState() => _ChatViewState();
@@ -87,6 +89,7 @@ class _ChatViewState extends State<_ChatView> {
     final features = Theme.of(context).extension<FeatureColors>()!;
 
     return Scaffold(
+      resizeToAvoidBottomInset: !widget.isBottomSheet,
       body: Column(
         children: [
           _buildHeader(isDark, features),
@@ -149,24 +152,39 @@ class _ChatViewState extends State<_ChatView> {
           padding: const EdgeInsets.fromLTRB(20, 12, 12, 20),
           child: Row(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: DesignRadius.radiusMd),
-                child: const Icon(Icons.auto_awesome_rounded,
-                    color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: 12),
+              if (Navigator.canPop(context)) ...[
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, color: Colors.white),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                const SizedBox(width: 8),
+              ] else ...[
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: DesignRadius.radiusMd),
+                  child: const Icon(Icons.auto_awesome_rounded,
+                      color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 12),
+              ],
               Expanded(
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Assistant IA',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: DesignTypography.titleLarge(Colors.white)),
                       Text(
-                          'Modèle: ${_models.firstWhere((m) => m['id'] == _selectedModel)['name']}',
+                          'Guide Eco-smart • ${_models.firstWhere((m) => m['id'] == _selectedModel)['name']}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: DesignTypography.bodySmall(
                               Colors.white.withValues(alpha: 0.8))),
                     ]),
@@ -183,75 +201,132 @@ class _ChatViewState extends State<_ChatView> {
   }
 
   Widget _buildEmptyState(bool isDark, FeatureColors features) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                  gradient: DesignColors.generativeGradient,
-                  borderRadius: DesignRadius.radiusXl),
-              child: const Icon(Icons.auto_awesome_rounded,
-                  size: 40, color: Colors.white),
+    final titleColor =
+        isDark ? DesignColors.textPrimaryDark : DesignColors.textPrimaryLight;
+    final subtitleColor = isDark
+        ? DesignColors.textSecondaryDark
+        : DesignColors.textSecondaryLight;
+
+    return SafeArea(
+      top: false,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 68,
+                    height: 68,
+                    decoration: BoxDecoration(
+                        gradient: DesignColors.generativeGradient,
+                        borderRadius: DesignRadius.radiusXl),
+                    child: const Icon(Icons.auto_awesome_rounded,
+                        size: 34, color: Colors.white),
+                  ),
+                  const SizedBox(height: 18),
+                  Text('Je vous guide dans Eco-smart',
+                      style: DesignTypography.headlineMedium(titleColor),
+                      textAlign: TextAlign.center),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Posez-moi une question sur les pages, les scans, les collectes, les centres, le quiz ou vos statistiques.',
+                    style: DesignTypography.bodyMedium(subtitleColor),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 22),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      _SuggestionChip(
+                          label: 'Scanner un déchet',
+                          color: features.generative,
+                          onTap: () => _setMessage(
+                              'Comment scanner un déchet dans l\'application ?')),
+                      _SuggestionChip(
+                          label: 'Mes statistiques',
+                          color: features.generative,
+                          onTap: () => _setMessage(
+                              'Où puis-je voir mes statistiques et mon impact ?')),
+                      _SuggestionChip(
+                          label: 'Nouvelle collecte',
+                          color: features.generative,
+                          onTap: () => _setMessage(
+                              'Comment enregistrer une nouvelle collecte ?')),
+                      _SuggestionChip(
+                          label: 'Centres proches',
+                          color: features.generative,
+                          onTap: () => _setMessage(
+                              'Comment trouver un centre de collecte proche ?')),
+                      _SuggestionChip(
+                          label: 'Eco-smart',
+                          color: features.generative,
+                          onTap: () => _setMessage(
+                              'Explique-moi les principales parties de l\'application Eco-smart.')),
+                      _SuggestionChip(
+                          label: 'Eco-Quiz',
+                          color: features.generative,
+                          onTap: () => _setMessage('/quiz écologie')),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            Text('Comment puis-je vous aider ?',
-                style: DesignTypography.headlineMedium(isDark
-                    ? DesignColors.textPrimaryDark
-                    : DesignColors.textPrimaryLight),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text('Posez une question ou demandez une tâche',
-                style: DesignTypography.bodyMedium(isDark
-                    ? DesignColors.textSecondaryDark
-                    : DesignColors.textSecondaryLight)),
-            const SizedBox(height: 32),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              children: [
-                _SuggestionChip(
-                    label: 'Explique-moi Flutter',
-                    color: features.generative,
-                    onTap: () => _setMessage(
-                        'Peux-tu m\'expliquer les bases de Flutter ?')),
-                _SuggestionChip(
-                    label: 'Code Python',
-                    color: features.generative,
-                    onTap: () => _setMessage(
-                        'Peux-tu écrire une fonction Python pour trier une liste ?')),
-                _SuggestionChip(
-                    label: 'Résume un texte',
-                    color: features.generative,
-                    onTap: () => _setMessage(
-                        'Peux-tu résumer ce texte en quelques lignes ?')),
-                _SuggestionChip(
-                    label: 'Lieux proches',
-                    color: features.generative,
-                    onTap: () => _setMessage(
-                        'Trouve des restaurants proches de moi et recommande les meilleurs.')),
-                _SuggestionChip(
-                    label: 'Ouvrir DataHub',
-                    color: features.generative,
-                    onTap: () => context.push('/ai/datahub')),
-              ],
-            ),
-          ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildToolButton({
+    required IconData icon,
+    required Color iconColor,
+    required bool isDark,
+    required double size,
+    required VoidCallback? onTap,
+    Color? backgroundColor,
+    Color? borderColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: backgroundColor ??
+              (isDark
+                  ? DesignColors.backgroundDark
+                  : DesignColors.backgroundLight),
+          borderRadius: DesignRadius.radiusXl,
+          border: Border.all(
+              color: (borderColor ??
+                      (isDark
+                          ? DesignColors.borderDark
+                          : DesignColors.borderLight))
+                  .withValues(alpha: 0.5)),
         ),
+        child: Icon(icon, color: iconColor, size: 22),
       ),
     );
   }
 
   Widget _buildInputBar(
       GenerativeState state, bool isDark, FeatureColors features) {
+    final double bottomPadding = widget.isBottomSheet
+        ? MediaQuery.of(context).viewPadding.bottom + 16
+        : DesignSpacing.bottomNavHeight + 16;
+    final compact = MediaQuery.of(context).size.width < 390;
+    final toolSize = compact ? 40.0 : 46.0;
+    final horizontalGap = compact ? 6.0 : 8.0;
+    final inputPadding = compact ? 14.0 : 18.0;
+
     return Container(
-      padding:
-          EdgeInsets.fromLTRB(16, 12, 16, DesignSpacing.bottomNavHeight + 16),
+      padding: EdgeInsets.fromLTRB(16, 12, 16, bottomPadding),
       decoration: BoxDecoration(
         color: isDark ? DesignColors.surfaceDark : DesignColors.surfaceLight,
         boxShadow: [
@@ -265,138 +340,82 @@ class _ChatViewState extends State<_ChatView> {
         children: [
           Row(
             children: [
-              GestureDetector(
-                onTap: _showNearbySettings,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: features.generative.withValues(alpha: 0.12),
-                    borderRadius: DesignRadius.radiusXl,
-                    border: Border.all(
-                        color: features.generative.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.radar_rounded,
-                          size: 16, color: features.generative),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Rayon ${(_nearbyRadiusMeters / 1000).toStringAsFixed(1)} km',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                    ],
+              Flexible(
+                child: GestureDetector(
+                  onTap: _showNearbySettings,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: features.generative.withValues(alpha: 0.12),
+                      borderRadius: DesignRadius.radiusXl,
+                      border: Border.all(
+                          color: features.generative.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.radar_rounded,
+                            size: 16, color: features.generative),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            'Rayon ${(_nearbyRadiusMeters / 1000).toStringAsFixed(1)} km',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              const Spacer(),
-              TextButton.icon(
+              const SizedBox(width: 8),
+              IconButton(
                 onPressed: _showNearbySettings,
-                icon: const Icon(Icons.tune_rounded, size: 16),
-                label: const Text('Regler'),
+                tooltip: 'Regler',
+                icon: const Icon(Icons.tune_rounded, size: 18),
+                visualDensity: VisualDensity.compact,
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              GestureDetector(
+              _buildToolButton(
+                icon: Icons.camera_alt_rounded,
+                iconColor: features.generative,
+                isDark: isDark,
+                size: toolSize,
                 onTap: state.status == GenerativeStatus.sending
                     ? null
                     : () => _pickAndLabelImage(state),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? DesignColors.backgroundDark
-                        : DesignColors.backgroundLight,
-                    borderRadius: DesignRadius.radiusXl,
-                    border: Border.all(
-                        color: (isDark
-                                ? DesignColors.borderDark
-                                : DesignColors.borderLight)
-                            .withValues(alpha: 0.5)),
-                  ),
-                  child: Icon(Icons.camera_alt_rounded,
-                      color: features.generative, size: 22),
-                ),
               ),
-              const SizedBox(width: 8),
-              GestureDetector(
+              SizedBox(width: horizontalGap),
+              _buildToolButton(
+                icon: Icons.document_scanner_rounded,
+                iconColor: features.generative,
+                isDark: isDark,
+                size: toolSize,
                 onTap: state.status == GenerativeStatus.sending
                     ? null
                     : () => _pickAndRecognizeText(state),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? DesignColors.backgroundDark
-                        : DesignColors.backgroundLight,
-                    borderRadius: DesignRadius.radiusXl,
-                    border: Border.all(
-                        color: (isDark
-                                ? DesignColors.borderDark
-                                : DesignColors.borderLight)
-                            .withValues(alpha: 0.5)),
-                  ),
-                  child: Icon(Icons.document_scanner_rounded,
-                      color: features.generative, size: 22),
-                ),
               ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: state.status == GenerativeStatus.sending
-                    ? null
-                    : () => _pickAndDetectFace(state),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? DesignColors.backgroundDark
-                        : DesignColors.backgroundLight,
-                    borderRadius: DesignRadius.radiusXl,
-                    border: Border.all(
-                        color: (isDark
-                                ? DesignColors.borderDark
-                                : DesignColors.borderLight)
-                            .withValues(alpha: 0.5)),
-                  ),
-                  child: Icon(Icons.sentiment_satisfied_alt_rounded,
-                      color: features.generative, size: 22),
-                ),
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
+              SizedBox(width: horizontalGap),
+              _buildToolButton(
+                icon: _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+                iconColor:
+                    _isListening ? Colors.redAccent : features.generative,
+                isDark: isDark,
+                size: toolSize,
                 onTap: _toggleListening,
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: _isListening
-                        ? Colors.redAccent.withValues(alpha: 0.2)
-                        : (isDark
-                            ? DesignColors.backgroundDark
-                            : DesignColors.backgroundLight),
-                    borderRadius: DesignRadius.radiusXl,
-                    border: Border.all(
-                        color: (_isListening
-                                ? Colors.redAccent
-                                : (isDark
-                                    ? DesignColors.borderDark
-                                    : DesignColors.borderLight))
-                            .withValues(alpha: 0.5)),
-                  ),
-                  child: Icon(
-                      _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                      color:
-                          _isListening ? Colors.redAccent : features.generative,
-                      size: 22),
-                ),
+                backgroundColor: _isListening
+                    ? Colors.redAccent.withValues(alpha: 0.2)
+                    : null,
+                borderColor: _isListening ? Colors.redAccent : null,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: horizontalGap),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -416,13 +435,15 @@ class _ChatViewState extends State<_ChatView> {
                         ? DesignColors.textPrimaryDark
                         : DesignColors.textPrimaryLight),
                     decoration: InputDecoration(
-                      hintText: 'Écrivez votre message...',
+                      hintText: state.quizStatus == QuizFlowStatus.active
+                          ? 'Reponse au quiz...'
+                          : 'Ecrivez votre message...',
                       hintStyle: DesignTypography.bodyMedium(isDark
                           ? DesignColors.textTertiaryDark
                           : DesignColors.textTertiaryLight),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: inputPadding, vertical: 14),
                     ),
                     maxLines: null,
                     textInputAction: TextInputAction.send,
@@ -430,14 +451,14 @@ class _ChatViewState extends State<_ChatView> {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: compact ? 8 : 10),
               GestureDetector(
                 onTap: state.status == GenerativeStatus.sending
                     ? null
                     : () => _sendMessage(state),
                 child: Container(
-                  width: 48,
-                  height: 48,
+                  width: toolSize,
+                  height: toolSize,
                   decoration: BoxDecoration(
                     gradient: state.status == GenerativeStatus.sending
                         ? null
@@ -497,8 +518,8 @@ class _ChatViewState extends State<_ChatView> {
 
       final labelNames = labels.map((l) => l.label).join(', ');
       final prompt =
-          "J'ai pris ça en photo et voici les ingrédients détectés par ML Kit : $labelNames. "
-          "Propose-moi une recette tunisienne originale ou un bon repas rapide à faire avec ça !";
+          "J'ai pris cet objet en photo et voici ce que l'IA a détecté : $labelNames. "
+          "Comment puis-je trier ou recycler cet objet correctement en Tunisie, ou quelles idées d'upcycling créatives as-tu pour le valoriser chez moi ?";
 
       _messageController.text = prompt;
       _sendMessage(state);
@@ -552,78 +573,23 @@ class _ChatViewState extends State<_ChatView> {
     }
   }
 
-  Future<void> _pickAndDetectFace(GenerativeState state) async {
-    try {
-      final picker = ImagePicker();
-      final xFile = await picker.pickImage(source: ImageSource.camera);
-      if (xFile == null) return;
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Analyse des expressions du visage...')),
-      );
-
-      final inputImage = InputImage.fromFilePath(xFile.path);
-      final options = FaceDetectorOptions(
-        enableClassification: true,
-        enableTracking: false,
-      );
-      final faceDetector = FaceDetector(options: options);
-      final faces = await faceDetector.processImage(inputImage);
-      faceDetector.close();
-
-      if (!mounted) return;
-      if (faces.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Aucun visage n'a été détecté dans l'image.")),
-        );
-        return;
-      }
-
-      final face = faces.first;
-      final isSmiling = (face.smilingProbability ?? 0) > 0.5;
-      final bothEyesOpen = (face.leftEyeOpenProbability ?? 0) > 0.5 &&
-          (face.rightEyeOpenProbability ?? 0) > 0.5;
-
-      String emotionDescription = "neutre";
-      if (isSmiling && bothEyesOpen) {
-        emotionDescription = "très heureux(se)";
-      } else if (isSmiling) {
-        emotionDescription = "souriant(e)";
-      } else if (!bothEyesOpen) {
-        emotionDescription = "fatigué(e) ou avec les yeux fermés";
-      }
-
-      final prompt =
-          "J'ai pris une photo de moi, et d'après Google ML Kit, j'ai l'air $emotionDescription. "
-          "Réponds-moi de manière très empathique, comme un assistant émotionnel, et dis un petit mot drôle ou rassurant pour ma journée !";
-
-      _messageController.text = prompt;
-
-      if (!mounted) return;
-      context.read<GenerativeBloc>().add(
-            SendMessage(
-                conversationId: state.currentConversation!['id'],
-                message: prompt,
-                model: _selectedModel,
-                latitude: null,
-                longitude: null),
-          );
-      _messageController.clear();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur ML Kit Face : $e')),
-      );
-    }
-  }
-
   Future<void> _sendMessage(GenerativeState state) async {
     if (_messageController.text.isNotEmpty &&
         state.currentConversation != null) {
       HapticFeedback.lightImpact();
-      final prompt = _messageController.text;
+      final prompt = _messageController.text.trim();
+
+      if (_handleQuizCommand(state, prompt)) {
+        _messageController.clear();
+        return;
+      }
+
+      if (state.quizStatus == QuizFlowStatus.active) {
+        context.read<GenerativeBloc>().add(AnswerQuizQuestion(answer: prompt));
+        _messageController.clear();
+        return;
+      }
+
       double? latitude;
       double? longitude;
 
@@ -647,6 +613,50 @@ class _ChatViewState extends State<_ChatView> {
           );
       _messageController.clear();
     }
+  }
+
+  bool _handleQuizCommand(GenerativeState state, String prompt) {
+    final trimmed = prompt.trim();
+    if (trimmed.isEmpty) return false;
+
+    final lower = trimmed.toLowerCase();
+    final isQuizCommand = lower.startsWith('/quiz') ||
+        lower.startsWith('quiz:') ||
+        lower.startsWith('quiz ');
+    if (!isQuizCommand) return false;
+
+    if (lower.startsWith('/quiz stop') || lower.startsWith('/quiz cancel')) {
+      context.read<GenerativeBloc>().add(CancelQuizSession());
+      return true;
+    }
+
+    String topic = trimmed;
+    if (lower.startsWith('/quiz')) {
+      topic = trimmed.substring(5).trim();
+    } else if (lower.startsWith('quiz:')) {
+      topic = trimmed.substring(5).trim();
+    } else if (lower.startsWith('quiz ')) {
+      topic = trimmed.substring(5).trim();
+    }
+
+    if (topic.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Indique un sujet apres /quiz.')),
+      );
+      return true;
+    }
+
+    context.read<GenerativeBloc>().add(
+          StartQuizSession(
+            topic: topic,
+            questionCount: 6,
+            difficulty: 'medium',
+            formats: const ['mcq', 'true_false', 'open'],
+            language: 'auto',
+            model: _selectedModel,
+          ),
+        );
+    return true;
   }
 
   void _showNearbySettings() {

@@ -19,6 +19,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -41,6 +42,11 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script>
+    // Force HTML renderer to avoid CanvasKit CDN dependency.
+    window.flutterWebRenderer = "html";
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIzaPpL-IrZPpX0C-TjqXo_IF0DemCTj8"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

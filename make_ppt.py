@@ -76,7 +76,7 @@ def add_footer(slide, page_number):
     left_tf.clear()
     lp = left_tf.paragraphs[0]
     lrun = lp.add_run()
-    lrun.text = "Google ML Kit - Flutter + Django REST"
+    lrun.text = "Eco-Smart Classifier - Flutter + FastAPI/Django"
     style_text(lrun, size=10, color=RGBColor(94, 104, 117))
 
     right = slide.shapes.add_textbox(Inches(12.45), Inches(7.24), Inches(0.45), Inches(0.22))
@@ -218,7 +218,7 @@ def add_title_slide(prs):
     tf.clear()
     p = tf.paragraphs[0]
     run = p.add_run()
-    run.text = "Google ML Kit\nApplication Full Stack"
+    run.text = "Eco-Smart Classifier\nPipeline Data & IA"
     style_text(run, size=46, bold=True, color=TEXT_LIGHT)
 
     sub = slide.shapes.add_textbox(Inches(0.95), Inches(3.35), Inches(8.8), Inches(0.7))
@@ -226,13 +226,13 @@ def add_title_slide(prs):
     stf.clear()
     sp = stf.paragraphs[0]
     srun = sp.add_run()
-    srun.text = "Flutter mobile + Django REST + IA locale et cloud"
+    srun.text = "Classification + Prix + Clustering + NLP + MLOps"
     style_text(srun, size=22, color=RGBColor(206, 228, 248))
 
-    chips = ["Vision", "NLP", "Generative AI", "DataHub"]
+    chips = ["Classification", "Regression", "Clustering", "MLOps"]
     start_x = 0.95
     for label in chips:
-        w = 1.45 if label in {"Vision", "NLP"} else 2.35
+        w = 2.2
         chip = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(start_x), Inches(4.35), Inches(w), Inches(0.53))
         chip.fill.solid()
         chip.fill.fore_color.rgb = RGBColor(228, 239, 250)
@@ -251,12 +251,12 @@ def add_title_slide(prs):
     ftf.clear()
     fp = ftf.paragraphs[0]
     fr = fp.add_run()
-    fr.text = "Presentation projet - Mars 2026"
+    fr.text = "Presentation projet - 2026"
     style_text(fr, size=12, color=RGBColor(196, 216, 237))
     set_speaker_notes(
         slide,
-        "Introduction (30 sec): Presenter l objectif du projet: application full stack IA avec Flutter et Django REST. "
-        "Annoncer la logique hybride: ML local pour vitesse et cloud pour fonctions avancees.",
+        "Introduction (30 sec): Presenter l objectif: classifier et valoriser des dechets (Tunisie) via un pipeline data/ML complet "
+        "et une application Flutter connectee a une API d inference. Annoncer les modules: imputation, modeles, clustering, NLP et MLOps.",
     )
 
 
@@ -283,112 +283,117 @@ def build_concise_7min(output_path, image_map):
     add_bullets_slide(
         prs,
         2,
-        "1. Contexte et Problematique",
-        "Pourquoi ce projet est important",
+        "1. Contexte et enjeux",
+        "Gestion des dechets et economie circulaire",
         [
-            "Les applications IA cloud-only subissent latence et indisponibilite reseau",
-            "Les utilisateurs attendent une experience rapide et fiable en conditions reelles",
-            "Notre approche: architecture hybride, locale sur mobile et distante via API",
+            "Objectif: classifier (categorie) et estimer le prix de revente (TND)",
+            "Donnees heterogenes: numerique + texte (Rapport_Collecte)",
+            "Livrable: pipeline reproductible + API d inference + UI Flutter",
         ],
-        "Slide 2 (40 sec): Expliquer le probleme principal. Le cloud seul ne suffit pas pour une UX stable. "
-        "Insister sur la motivation du choix hybride.",
+        "Slide 2 (40 sec): Poser le contexte (dechets) et les 2 taches: classification + regression. "
+        "Insister sur l approche produit: API + interface demo.",
     )
 
     add_bullets_slide(
         prs,
         3,
-        "2. Objectifs du Projet",
-        "Ce que la solution doit garantir",
+        "2. Pipeline end-to-end",
+        "De la data brute au monitoring",
         [
-            "Regrouper Vision, NLP et IA generative dans une seule application",
-            "Maintenir securite et qualite UX avec JWT, timeouts et gestion d erreurs",
-            "Concevoir une base modulaire, evolutive, et facilement demonstrable",
+            "Nettoyage + imputation + feature engineering",
+            "Training: classification, regression, clustering, NLP",
+            "MLOps: DVC (repro), MLflow (tracking/registry), tests, monitoring drift",
         ],
-        "Slide 3 (35 sec): Donner 3 objectifs: capacites IA, robustesse, extensibilite.",
+        "Slide 3 (45 sec): Donner une vue globale des etapes et de l outillage MLOps.",
     )
 
     add_bullets_slide(
         prs,
         4,
-        "3. Architecture Globale",
-        "Vue systeme",
+        "3. Nettoyage et imputation",
+        "Median vs KNN vs IterativeImputer",
         [
-            "Frontend Flutter: BLoC, navigation, client Dio avec intercepteur JWT",
-            "Backend Django REST: endpoints /api/v1 pour users, vision, nlp, generative, datahub",
-            "Providers IA: traitement local ML Kit + modeles distants selon disponibilite",
-            "Flux: App mobile -> API securisee -> Services IA -> reponse contextualisee",
+            "Probleme: ~10% de valeurs manquantes sur Poids",
+            "Comparaison quantitative via masquage 10% + RMSE de reconstruction",
+            "Decision: KNN (k=5) meilleur compromis qualite/cout ; Iterative plus lent et instable",
         ],
-        "Slide 4 (55 sec): Decrire le flux complet du mobile vers backend puis services IA. "
-        "Conclure sur la separation claire des responsabilites.",
+        "Slide 4 (55 sec): Expliquer le protocole RMSE, puis justifier le choix KNN.",
     )
 
-    add_screenshot_slide(
+    add_bullets_slide(
         prs,
         5,
-        "4. Demonstration Vision",
-        "OCR et detection en direct",
-        "Montrer la vitesse du traitement local et la qualite du resultat instantane.",
-        image_left=image_map.get("vision"),
-        image_right=image_map.get("ocr"),
+        "4. Modeles supervises",
+        "Classification + Regression (prix)",
+        [
+            "Classification: LogReg vs RandomForest vs GradientBoosting (ACC/F1)",
+            "Regression: LinReg vs RFRegressor vs GBRegressor (MAE/RMSE/R2)",
+            "Point critique: ecart validation/test a surveiller (outliers, shift, split)",
+        ],
+        "Slide 5 (70 sec): Presenter les resultats cles et une lecture critique (risque dataset trop separable).",
     )
 
-    add_screenshot_slide(
+    add_bullets_slide(
         prs,
         6,
-        "5. Demonstration NLP",
-        "Sentiment, traduction, extraction d entites",
-        "Mettre en avant le mode degrade grace au fallback quand le reseau est lent.",
-        image_left=image_map.get("nlp"),
-        image_right=image_map.get("home"),
+        "5. Clustering non supervise",
+        "K-Means + Elbow + PCA",
+        [
+            "Elbow method: k=4 clusters",
+            "PCA 2D pour visualiser et interpreter les segments",
+            "Utilite: comprendre des sous-profils de dechets (metal, plastique, papier, verre)",
+        ],
+        "Slide 6 (45 sec): Expliquer k=4, PCA et ce que les clusters apportent au produit.",
     )
 
-    add_screenshot_slide(
+    add_bullets_slide(
         prs,
         7,
-        "6. Demonstration IA + Dashboard",
-        "Chat IA, stats dynamiques, profil",
-        "Insister sur la coherence globale de l experience utilisateur.",
-        image_left=image_map.get("gen"),
-        image_right=image_map.get("home"),
+        "6. Multimodal + NLP",
+        "Texte + numerique dans un seul pipeline",
+        [
+            "Vectorisation texte (TF-IDF uni+bi) + variables numeriques (ColumnTransformer)",
+            "Option: StackingClassifier pour combiner plusieurs modeles",
+            "NLP: nettoyage, stopwords, n-grams ; evaluation par accuracy >= 0.70",
+        ],
+        "Slide 7 (55 sec): Montrer l avantage du multimodal pour exploiter Rapport_Collecte + mesures.",
     )
 
     add_bullets_slide(
         prs,
         8,
-        "7. Resultats",
-        "Bilan de la mise en oeuvre",
+        "7. MLOps et qualite",
+        "Reproductibilite + registry + monitoring",
         [
-            "Application full stack operationnelle et presentable en demo live",
-            "Communication backend/frontend validee en environnement emulateur",
-            "Architecture lisible et reutilisable pour futurs cas d usage IA",
+            "DVC: pipeline rejouable (preprocess + train) via dvc repro",
+            "MLflow: tracking des runs + Model Registry (stage Production)",
+            "Tests: pytest dans venv Py3.12 + couverture >= 70% sur api_inference",
+            "Monitoring: Evidently (data drift) + alertes JSON",
         ],
-        "Slide 8 (45 sec): Donner des faits concrets: app tourne, backend repond, demo stable.",
+        "Slide 8 (65 sec): Expliquer comment on passe du notebook a une chaine industrialisable.",
     )
 
-    add_bullets_slide(
+    add_screenshot_slide(
         prs,
         9,
-        "8. Limites et Evolutions",
-        "Pistes d amelioration",
-        [
-            "Dependance a certaines cles API cloud pour des fonctions avancees",
-            "Performance variable selon modele et qualite de connexion",
-            "Perspectives: RAG documentaire, benchmark multi-modeles, monitoring IA",
-        ],
-        "Slide 9 (40 sec): Montrer maturite du projet avec limites assumees et roadmap claire.",
+        "8. Demonstration",
+        "UI Flutter: Dashboard / Curseurs / Assistant NLP",
+        "Montrer: (1) dashboard, (2) sliders en temps reel, (3) assistant texte -> prediction.",
+        image_left=image_map.get("dashboard"),
+        image_right=image_map.get("sliders"),
     )
 
     add_bullets_slide(
         prs,
         10,
         "9. Conclusion",
-        "Message final",
+        "Message final et limites",
         [
-            "Le projet combine utilite technique, robustesse et qualite de presentation",
-            "La strategie hybride local+cloud apporte une vraie valeur en contexte reel",
-            "Prise en main immediate pour une soutenance claire et convaincante",
+            "Solution complete: data -> modeles -> API -> interface -> monitoring",
+            "Limites: possibles biais dataset, gestion outliers et evaluation en conditions reelles",
+            "Perspectives: embeddings type CamemBERT, deploiement cloud, dashboard monitoring",
         ],
-        "Slide 10 (35 sec): Resumer la valeur: utile, robuste, extensible.",
+        "Slide 10 (40 sec): Conclure et ouvrir sur une mini roadmap.",
     )
 
     add_bullets_slide(
@@ -412,75 +417,85 @@ def build_detailed_12min(output_path, image_map):
 
     slides = [
         (
-            "1. Contexte et Problematique",
-            "Pourquoi ce projet est important",
+            "1. Contexte et enjeux",
+            "Gestion des dechets et economie circulaire",
             [
-                "Les applications IA cloud-only subissent latence et indisponibilite reseau",
-                "Les utilisateurs attendent une experience rapide et fiable en conditions reelles",
-                "Notre approche: architecture hybride, locale sur mobile et distante via API",
+                "Classification de dechets + estimation prix de revente (TND)",
+                "Donnees: numeriques (Poids, Volume, etc.) + texte (Rapport_Collecte)",
+                "Objectif produit: API d inference + application Flutter demonstrable",
             ],
-            "Slide 2 (50 sec): Contextualiser le besoin et annoncer la logique hybride.",
+            "Slide 2 (50 sec): Contextualiser le besoin et annoncer les 2 taches ML.",
         ),
         (
-            "2. Objectifs du Projet",
-            "Ce que la solution doit garantir",
+            "2. Vue pipeline end-to-end",
+            "De la data au monitoring",
             [
-                "Regrouper Vision, NLP et IA generative dans une seule application",
-                "Maintenir securite et qualite UX avec JWT, timeouts et gestion d erreurs",
-                "Concevoir une base modulaire, evolutive, et facilement demonstrable",
+                "Nettoyage + imputation + feature engineering",
+                "Training: classification + regression + clustering + NLP",
+                "MLOps: DVC, MLflow Registry, tests, monitoring drift",
             ],
-            "Slide 3 (45 sec): Les objectifs guident toutes les decisions techniques.",
+            "Slide 3 (55 sec): Presenter la chaine de valeur et les choix d outillage.",
         ),
         (
-            "3. Architecture Globale",
-            "Vue systeme",
+            "3. Donnees et preparation",
+            "EDA, split et pretraitements",
             [
-                "Frontend Flutter: BLoC, navigation, client Dio avec intercepteur JWT",
-                "Backend Django REST: endpoints /api/v1 pour users, vision, nlp, generative, datahub",
-                "Providers IA: traitement local ML Kit + modeles distants selon disponibilite",
-                "Flux: App mobile -> API securisee -> Services IA -> reponse contextualisee",
+                "Jeux: train/val/test + dataset full nettoye",
+                "Outliers: capping IQR ; normalisation si necessaire",
+                "Encodage source: One-Hot ; ajout de features derivees (densite, log volume)",
             ],
-            "Slide 4 (70 sec): Decrire l architecture et la responsabilite de chaque couche.",
+            "Slide 4 (70 sec): Montrer comment on evite le data leakage (fit sur train, apply sur test).",
         ),
         (
-            "4. Vision",
-            "Briques ML Kit locale",
+            "4. Imputation des manquants",
+            "Median vs KNN vs Iterative",
             [
-                "OCR pour extraction de texte",
-                "Detection d objets, visages et code-barres",
-                "Latence faible grace au traitement on-device",
+                "Protocole: masquage 10% sur Poids connu + RMSE",
+                "KNN (k=5) retient les correlations inter-variables",
+                "Iterative: plus lent + avertissements de convergence possibles",
             ],
-            "Slide 5 (45 sec): Expliquer pourquoi Vision local donne une meilleure reactivite.",
+            "Slide 5 (55 sec): Justifier le choix retenu et les limites.",
         ),
         (
-            "5. NLP",
-            "Traitement de texte hybride",
+            "5. Classification",
+            "RandomForest, GradientBoosting, Stacking",
             [
-                "Sentiment, langue, traduction et extraction d entites",
-                "Fallback automatique sur local en cas de timeout distant",
-                "Stabilite des fonctionnalites en reseau degrade",
+                "Mesures: Accuracy + F1 pondere",
+                "Comparaison: LogReg (baseline), RF (robuste), GB (boosting)",
+                "Point critique: scores tres eleves -> verifier separabilite et fuite de donnees",
             ],
-            "Slide 6 (50 sec): Insister sur le fallback comme element cle de robustesse.",
+            "Slide 6 (60 sec): Presenter resultats et lecture critique.",
         ),
         (
-            "6. IA Generative",
-            "Assistant conversationnel",
+            "6. Regression (prix)",
+            "RFRegressor vs GBRegressor",
             [
-                "Chat IA via backend",
-                "Generation texte/code avec gestion timeout",
-                "Possibilite de bascule vers modele plus leger",
+                "Mesures: MAE, RMSE, R2",
+                "Baseline lineaire faible -> relations non lineaires dominantes",
+                "Ecart val/test a analyser (outliers, shift, split)",
             ],
-            "Slide 7 (50 sec): Montrer la valeur pratique et la gestion des erreurs.",
+            "Slide 7 (60 sec): Presenter les chiffres cles et l interpretation.",
         ),
         (
-            "7. Securite et UX",
-            "Qualite produit",
+            "7. Clustering + NLP + Multimodal",
+            "Analyse non supervisee et features texte",
             [
-                "Authentification JWT access/refresh",
-                "Messages d erreur comprehensibles",
-                "Dashboard dynamique avec cache local",
+                "K-Means: choix k=4 (elbow) + PCA 2D",
+                "NLP: TF-IDF, n-grams, pipeline sklearn",
+                "Multimodal: ColumnTransformer (texte + numerique) ; option stacking",
             ],
-            "Slide 8 (55 sec): Expliquer que la fiabilite percue vient aussi de l UX.",
+            "Slide 8 (70 sec): Relier les modules a un seul pipeline utilisable en inference.",
+        ),
+        (
+            "8. MLOps",
+            "Reproductibilite, registry, tests, monitoring",
+            [
+                "DVC: dvc.yaml + dvc repro pour rejouer preprocess/train",
+                "MLflow: tracking + Model Registry (promotion Production)",
+                "Tests: pytest dans venv propre ; couverture sur api_inference",
+                "Monitoring: Evidently (drift) + alertes JSON",
+            ],
+            "Slide 9 (70 sec): Montrer la maturite: du notebook a la production.",
         ),
     ]
 
@@ -492,74 +507,51 @@ def build_detailed_12min(output_path, image_map):
     add_screenshot_slide(
         prs,
         page,
-        "8. Demonstration Vision",
-        "OCR et detection en direct",
-        "Slide demo (70 sec): Afficher une image de texte puis resultat OCR. Enchainer avec une detection d objet.",
-        image_left=image_map.get("vision"),
-        image_right=image_map.get("ocr"),
-    )
-    page += 1
-
-    add_screenshot_slide(
-        prs,
-        page,
-        "9. Demonstration NLP",
-        "Sentiment, traduction, extraction d entites",
-        "Slide demo (70 sec): Montrer un cas positif/negatif puis une traduction. Mentionner fallback.",
-        image_left=image_map.get("nlp"),
-        image_right=image_map.get("home"),
-    )
-    page += 1
-
-    add_screenshot_slide(
-        prs,
-        page,
-        "10. Demonstration IA + Dashboard",
-        "Chat IA et statistiques",
-        "Slide demo (70 sec): Poser une question au chat puis montrer stats dashboard et rafraichissement.",
-        image_left=image_map.get("gen"),
-        image_right=image_map.get("home"),
+        "9. Demonstration",
+        "Dashboard + curseurs + assistant NLP",
+        "Slide demo (90 sec): Montrer l interface Flutter. Enchainer: dashboard -> sliders -> assistant texte -> prediction.",
+        image_left=image_map.get("dashboard"),
+        image_right=image_map.get("assistant"),
     )
     page += 1
 
     add_bullets_slide(
         prs,
         page,
-        "11. Resultats et Impacts",
+        "10. Resultats et limites",
         "Bilan global",
         [
-            "Application full stack operationnelle en condition de demo",
-            "Communication backend/frontend validee avec endpoints securises",
-            "Architecture modulable pour nouvelles features IA",
+            "Classification et regression avec performances elevees sur splits",
+            "Pipeline reproductible et demo stable via API d inference",
+            "Limites: separabilite dataset, robustesse hors-distribution a evaluer",
         ],
-        "Slide resultats (50 sec): Donner preuves concretes de fonctionnement.",
+        "Slide resultats (60 sec): Presenter les acquis et les limites assumees.",
     )
     page += 1
 
     add_bullets_slide(
         prs,
         page,
-        "12. Limites, Perspectives, Questions",
-        "Vision de continuation",
+        "11. Perspectives & Questions",
+        "Roadmap",
         [
-            "Limites: dependances cloud et variabilite des modeles",
-            "Perspectives: RAG, benchmark multi-modeles, observabilite IA",
+            "Bonus: CamemBERT/Sentence Transformers pour enrichir le NLP",
+            "Deploiement: Render/Railway/HuggingFace Spaces pour API ou Flutter Web",
+            "Monitoring avance: Prometheus/Grafana sur logs drift",
             "Merci pour votre attention - Questions",
         ],
-        "Slide finale (40 sec): Montrer projection et ouverture aux questions.",
+        "Slide finale (45 sec): Ouvrir sur les bonus et passer aux questions.",
     )
 
     prs.save(output_path)
 
 
 def build_image_map(base_dir):
-    img_dir = Path(base_dir) / "frontend" / "imagess"
+    img_dir = Path(base_dir) / "slides"
     return {
-        "vision": img_dir / "vision.png",
-        "ocr": img_dir / "OCRVison.png",
-        "nlp": img_dir / "NLP.png",
-        "gen": img_dir / "IAgenerative.png",
-        "home": img_dir / "accueil.png",
+        "dashboard": img_dir / "dashboard.png",
+        "sliders": img_dir / "sliders.png",
+        "assistant": img_dir / "assistant_nlp.png",
     }
 
 
@@ -567,8 +559,8 @@ if __name__ == "__main__":
     root = Path(__file__).resolve().parent
     image_map = build_image_map(root)
 
-    concise = "GoogleMLKit_presentation_7min.pptx"
-    detailed = "GoogleMLKit_presentation_12min.pptx"
+    concise = "EcoSmartClassifier_presentation_7min.pptx"
+    detailed = "EcoSmartClassifier_presentation_12min.pptx"
     build_concise_7min(concise, image_map)
     build_detailed_12min(detailed, image_map)
 

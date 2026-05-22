@@ -16,6 +16,9 @@ frontend/.flutter-plugins
 # MLflow
 notebooks/mlruns/
 
+# Model artifacts (tracked via DVC)
+notebooks/multimodal_model.pkl
+
 # Fichiers lourds
 *.mp4
 *.avi

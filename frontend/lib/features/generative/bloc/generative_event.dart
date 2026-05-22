@@ -84,3 +84,36 @@ class GenerateCode extends GenerativeEvent {
 }
 
 class ClearGenerativeResult extends GenerativeEvent {}
+
+class StartQuizSession extends GenerativeEvent {
+  final String topic;
+  final int questionCount;
+  final String difficulty;
+  final List<String> formats;
+  final String language;
+  final String model;
+
+  const StartQuizSession({
+    required this.topic,
+    this.questionCount = 6,
+    this.difficulty = 'medium',
+    this.formats = const ['mcq', 'true_false', 'open'],
+    this.language = 'auto',
+    this.model = 'ollama:mistral:7b',
+  });
+
+  @override
+  List<Object?> get props =>
+      [topic, questionCount, difficulty, formats, language, model];
+}
+
+class AnswerQuizQuestion extends GenerativeEvent {
+  final String answer;
+
+  const AnswerQuizQuestion({required this.answer});
+
+  @override
+  List<Object?> get props => [answer];
+}
+
+class CancelQuizSession extends GenerativeEvent {}

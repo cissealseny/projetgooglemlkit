@@ -88,13 +88,7 @@ class VisionPage extends StatelessWidget {
                     color: features.vision,
                     onTap: () => context.go('/vision/text-recognition')),
                 const SizedBox(height: 12),
-                _FeatureTile(
-                    icon: Icons.face_rounded,
-                    title: 'Détection de visages',
-                    subtitle: 'Analyse faciale',
-                    color: features.vision,
-                    onTap: () => context.go('/vision/face-detection')),
-                const SizedBox(height: 12),
+
                 _FeatureTile(
                     icon: Icons.category_rounded,
                     title: 'Détection d\'objets',

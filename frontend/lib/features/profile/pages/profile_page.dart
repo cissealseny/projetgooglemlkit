@@ -9,11 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/theme/design_colors.dart';
 import '../../../core/theme/design_tokens.dart';
+import '../../../core/network/api_client.dart';
 import '../../../core/widgets/premium_components.dart';
 import '../../auth/bloc/auth_bloc.dart';
-import '../../auth/repository/auth_repository.dart';
-import '../../generative/repository/generative_repository.dart';
-import '../../nlp/repository/nlp_repository.dart';
 
 /// Premium Profile Page
 class ProfilePage extends StatefulWidget {
@@ -55,40 +53,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<_ProfileStats> _loadStats() async {
     int analyses = 0;
-    int translations = 0;
-    int messages = 0;
+    int collectes = 0;
+    int points = 0;
 
     try {
-      final profile = await getIt<AuthRepository>().getProfile();
-      analyses = profile.apiCallsCount;
-    } catch (_) {}
-
-    try {
-      final nlpHistory = await getIt<NLPRepository>().getHistory();
-      translations = nlpHistory
-          .where(
-            (item) =>
-                item is Map &&
-                item['analysis_type']?.toString() == 'translation',
-          )
-          .length;
-    } catch (_) {}
-
-    try {
-      final conversations =
-          await getIt<GenerativeRepository>().getConversations();
-      messages = conversations.fold<int>(0, (sum, item) {
-        if (item is Map && item['message_count'] is int) {
-          return sum + (item['message_count'] as int);
+      final response = await getIt<ApiClient>().getUserStats();
+      final data = response.data;
+      if (data is Map) {
+        analyses = data['scans_total'] as int? ?? 0;
+        final totals = data['totals'];
+        if (totals is Map) {
+          points = totals['points'] as int? ?? 0;
+          collectes = totals['count'] as int? ?? 0;
         }
-        return sum;
-      });
+      }
     } catch (_) {}
 
     final stats = _ProfileStats(
       analyses: analyses,
-      translations: translations,
-      messages: messages,
+      collectes: collectes,
+      points: points,
       updatedAt: DateTime.now(),
     );
 
@@ -227,34 +211,34 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Expanded(
                                 child: _StatCard(
-                                  icon: Icons.remove_red_eye_rounded,
+                                  icon: Icons.qr_code_scanner_rounded,
                                   value: isLoading
                                       ? '...'
                                       : '${stats?.analyses ?? 0}',
-                                  label: 'Analyses',
-                                  color: DesignColors.vision,
+                                  label: 'Scans',
+                                  color: DesignColors.primary,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _StatCard(
-                                  icon: Icons.translate_rounded,
+                                  icon: Icons.eco_rounded,
                                   value: isLoading
                                       ? '...'
-                                      : '${stats?.translations ?? 0}',
-                                  label: 'Traductions',
-                                  color: DesignColors.nlp,
+                                      : '${stats?.collectes ?? 0}',
+                                  label: 'Collectes',
+                                  color: DesignColors.ecoSmart,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _StatCard(
-                                  icon: Icons.chat_rounded,
+                                  icon: Icons.stars_rounded,
                                   value: isLoading
                                       ? '...'
-                                      : '${stats?.messages ?? 0}',
-                                  label: 'Messages',
-                                  color: DesignColors.generative,
+                                      : '${stats?.points ?? 0}',
+                                  label: 'Points',
+                                  color: Colors.amber,
                                 ),
                               ),
                             ],
@@ -308,12 +292,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       onTap: () {}),
                   const SizedBox(height: 8),
                   _SettingsTile(
-                      icon: Icons.language_rounded,
-                      title: 'Langue',
-                      subtitle: 'Français',
-                      onTap: () {}),
-                  const SizedBox(height: 8),
-                  _SettingsTile(
                       icon: Icons.notifications_rounded,
                       title: 'Notifications',
                       subtitle: 'Gérer les alertes',
@@ -352,22 +330,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
 class _ProfileStats {
   final int analyses;
-  final int translations;
-  final int messages;
+  final int collectes;
+  final int points;
   final DateTime updatedAt;
 
   const _ProfileStats({
     required this.analyses,
-    required this.translations,
-    required this.messages,
+    required this.collectes,
+    required this.points,
     required this.updatedAt,
   });
 
   factory _ProfileStats.fromJson(Map<String, dynamic> json) {
     return _ProfileStats(
       analyses: json['analyses'] as int? ?? 0,
-      translations: json['translations'] as int? ?? 0,
-      messages: json['messages'] as int? ?? 0,
+      collectes: json['collectes'] as int? ?? 0,
+      points: json['points'] as int? ?? 0,
       updatedAt: DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
           DateTime.now(),
     );
@@ -376,8 +354,8 @@ class _ProfileStats {
   Map<String, dynamic> toJson() {
     return {
       'analyses': analyses,
-      'translations': translations,
-      'messages': messages,
+      'collectes': collectes,
+      'points': points,
       'updatedAt': updatedAt.toIso8601String(),
     };
   }

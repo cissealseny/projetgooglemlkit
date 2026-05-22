@@ -46,6 +46,16 @@ class DesignColors {
   static const Color generativeLight = Color(0xFFF87171);
   static const Color generativeSurface = Color(0xFFFEF2F2);
 
+  /// Quiz - Deep Teal (modern focus)
+  static const Color quiz = Color(0xFF0F766E);
+  static const Color quizLight = Color(0xFF2DD4BF);
+  static const Color quizSurface = Color(0xFFE6FFFA);
+
+  /// Eco-smart - Clean Blue (sustainable tech)
+  static const Color ecoSmart = Color(0xFF2563EB);
+  static const Color ecoSmartLight = Color(0xFF60A5FA);
+  static const Color ecoSmartSurface = Color(0xFFEFF6FF);
+
   // ══════════════════════════════════════════════════════════════
   // SEMANTIC COLORS
   // ══════════════════════════════════════════════════════════════
@@ -132,6 +142,18 @@ class DesignColors {
 
   static const LinearGradient generativeGradient = LinearGradient(
     colors: [Color(0xFFDC2626), Color(0xFFF87171)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient quizGradient = LinearGradient(
+    colors: [Color(0xFF0F766E), Color(0xFF2DD4BF)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient ecoSmartGradient = LinearGradient(
+    colors: [Color(0xFF2563EB), Color(0xFF60A5FA)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

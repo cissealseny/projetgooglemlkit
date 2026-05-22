@@ -18,6 +18,7 @@ class AppColors {
   static const Color visionAccent = Color(0xFF8B5CF6); // Purple-500
   static const Color nlpAccent = Color(0xFF10B981); // Emerald-500
   static const Color generativeAccent = Color(0xFFF59E0B); // Amber-500
+  static const Color ecoAccent = Color(0xFF3B82F6); // Blue-500
 
   // Status Colors
   static const Color success = Color(0xFF22C55E); // Green-500
@@ -70,6 +71,12 @@ class AppColors {
 
   static const LinearGradient generativeGradient = LinearGradient(
     colors: [Color(0xFFF59E0B), Color(0xFFFBBF24)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient ecoGradient = LinearGradient(
+    colors: [Color(0xFF3B82F6), Color(0xFF60A5FA)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

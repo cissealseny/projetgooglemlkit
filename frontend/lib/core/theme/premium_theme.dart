@@ -344,6 +344,12 @@ class PremiumTheme {
           generative: DesignColors.generative,
           generativeLight: DesignColors.generativeLight,
           generativeSurface: DesignColors.generativeSurface,
+          quiz: DesignColors.quiz,
+          quizLight: DesignColors.quizLight,
+          quizSurface: DesignColors.quizSurface,
+          ecoSmart: DesignColors.ecoSmart,
+          ecoSmartLight: DesignColors.ecoSmartLight,
+          ecoSmartSurface: DesignColors.ecoSmartSurface,
         ),
       ],
     );
@@ -614,6 +620,12 @@ class PremiumTheme {
           generative: DesignColors.generativeLight,
           generativeLight: DesignColors.generative,
           generativeSurface: Color(0xFF1F0A0A),
+          quiz: DesignColors.quizLight,
+          quizLight: DesignColors.quiz,
+          quizSurface: Color(0xFF0B1F1A),
+          ecoSmart: DesignColors.ecoSmartLight,
+          ecoSmartLight: DesignColors.ecoSmart,
+          ecoSmartSurface: Color(0xFF0C1B3A),
         ),
       ],
     );
@@ -662,6 +674,12 @@ class FeatureColors extends ThemeExtension<FeatureColors> {
   final Color generative;
   final Color generativeLight;
   final Color generativeSurface;
+  final Color quiz;
+  final Color quizLight;
+  final Color quizSurface;
+  final Color ecoSmart;
+  final Color ecoSmartLight;
+  final Color ecoSmartSurface;
 
   const FeatureColors({
     required this.vision,
@@ -673,6 +691,12 @@ class FeatureColors extends ThemeExtension<FeatureColors> {
     required this.generative,
     required this.generativeLight,
     required this.generativeSurface,
+    required this.quiz,
+    required this.quizLight,
+    required this.quizSurface,
+    required this.ecoSmart,
+    required this.ecoSmartLight,
+    required this.ecoSmartSurface,
   });
 
   @override
@@ -686,6 +710,12 @@ class FeatureColors extends ThemeExtension<FeatureColors> {
     Color? generative,
     Color? generativeLight,
     Color? generativeSurface,
+    Color? quiz,
+    Color? quizLight,
+    Color? quizSurface,
+    Color? ecoSmart,
+    Color? ecoSmartLight,
+    Color? ecoSmartSurface,
   }) {
     return FeatureColors(
       vision: vision ?? this.vision,
@@ -697,6 +727,12 @@ class FeatureColors extends ThemeExtension<FeatureColors> {
       generative: generative ?? this.generative,
       generativeLight: generativeLight ?? this.generativeLight,
       generativeSurface: generativeSurface ?? this.generativeSurface,
+      quiz: quiz ?? this.quiz,
+      quizLight: quizLight ?? this.quizLight,
+      quizSurface: quizSurface ?? this.quizSurface,
+      ecoSmart: ecoSmart ?? this.ecoSmart,
+      ecoSmartLight: ecoSmartLight ?? this.ecoSmartLight,
+      ecoSmartSurface: ecoSmartSurface ?? this.ecoSmartSurface,
     );
   }
 
@@ -714,6 +750,12 @@ class FeatureColors extends ThemeExtension<FeatureColors> {
       generativeLight: Color.lerp(generativeLight, other.generativeLight, t)!,
       generativeSurface:
           Color.lerp(generativeSurface, other.generativeSurface, t)!,
+      quiz: Color.lerp(quiz, other.quiz, t)!,
+      quizLight: Color.lerp(quizLight, other.quizLight, t)!,
+      quizSurface: Color.lerp(quizSurface, other.quizSurface, t)!,
+      ecoSmart: Color.lerp(ecoSmart, other.ecoSmart, t)!,
+      ecoSmartLight: Color.lerp(ecoSmartLight, other.ecoSmartLight, t)!,
+      ecoSmartSurface: Color.lerp(ecoSmartSurface, other.ecoSmartSurface, t)!,
     );
   }
 }

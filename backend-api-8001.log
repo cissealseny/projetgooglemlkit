@@ -1,0 +1,7 @@
+✅ Modèle de classification chargé avec succès depuis: C:\Users\DELL\Downloads\GoogleMLKit\backend\..\notebooks\multimodal_model.pkl
+✅ Modèle de régression chargé avec succès depuis: C:\Users\DELL\Downloads\GoogleMLKit\backend\..\notebooks\regression_model.pkl
+INFO:     127.0.0.1:8136 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:8149 - "GET /health HTTP/1.1" 200 OK
+✅ Stats de prétraitement chargées avec succès
+INFO:     127.0.0.1:8163 - "POST /predict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:8249 - "GET /health HTTP/1.1" 200 OK

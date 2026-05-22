@@ -1,0 +1,22 @@
+stages:
+  preprocess:
+    cmd: python scripts/preprocess_data.py
+    deps:
+      - scripts/preprocess_data.py
+      - backend/dataset_ProjetML_2026.csv
+    outs:
+      - data/processed
+  train:
+    cmd: python scripts/train_all_models.py
+    deps:
+      - scripts/train_all_models.py
+      - data/processed/train_clean.csv
+      - data/processed/test_clean.csv
+    outs:
+      - notebooks/multimodal_model.pkl
+      - notebooks/regression_model.pkl
+      - notebooks/scaler_model.pkl
+      - notebooks/kmeans_model.pkl
+      - notebooks/pca_model.pkl
+    metrics:
+      - data/metrics.json

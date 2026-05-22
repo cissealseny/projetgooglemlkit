@@ -1,0 +1,29 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="600" rx="36" fill="#F4F7F5"/>
+  <rect x="80" y="90" width="520" height="420" rx="28" fill="#FFF1E5"/>
+  <rect x="640" y="120" width="460" height="140" rx="24" fill="#E6F7EF"/>
+  <rect x="640" y="290" width="460" height="220" rx="24" fill="#FFFFFF"/>
+  <g fill="#2E8B57">
+    <rect x="130" y="180" width="140" height="220" rx="18"/>
+    <rect x="300" y="210" width="120" height="190" rx="18"/>
+    <rect x="440" y="160" width="120" height="240" rx="18"/>
+  </g>
+  <g fill="#FFFFFF" opacity="0.9">
+    <text x="140" y="170" font-family="Arial" font-size="26" font-weight="700">Gestion des dechets</text>
+    <text x="140" y="205" font-family="Arial" font-size="18">Illustration provisoire</text>
+  </g>
+  <g fill="#F8B84E">
+    <circle cx="860" cy="190" r="42"/>
+    <text x="842" y="198" font-family="Arial" font-size="24" font-weight="700" fill="#FFFFFF">CO2</text>
+  </g>
+  <g fill="#2E8B57">
+    <rect x="680" y="340" width="120" height="120" rx="18"/>
+    <rect x="820" y="340" width="120" height="120" rx="18"/>
+    <rect x="960" y="340" width="120" height="120" rx="18"/>
+  </g>
+  <g fill="#FFFFFF" font-family="Arial" font-size="16" font-weight="600">
+    <text x="694" y="412">Plastique</text>
+    <text x="846" y="412">Verre</text>
+    <text x="982" y="412">Metal</text>
+  </g>
+</svg>

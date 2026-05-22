@@ -10,6 +10,10 @@ class ApiClient {
     sendTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(minutes: 3),
   );
+  final Options _ecoOptions = Options(
+    sendTimeout: const Duration(seconds: 45),
+    receiveTimeout: const Duration(minutes: 2),
+  );
 
   ApiClient(this._dio);
 
@@ -27,6 +31,11 @@ class ApiClient {
 
   Future<Response> updateProfile(Map<String, dynamic> data) =>
       _dio.patch('/auth/profile/', data: data);
+
+    Future<Response> getUserStats() => _dio.get('/auth/stats/');
+
+    Future<Response> createRecyclingEvents(List<Map<String, dynamic>> events) =>
+            _dio.post('/auth/recycling-events/', data: {'events': events});
 
   // Vision
   Future<Response> performOCR(FormData data) =>
@@ -112,4 +121,38 @@ class ApiClient {
       });
 
   Future<Response> getDataHubJobs() => _dio.get('/datahub/jobs/');
+
+  // Quiz
+  Future<Response> generateQuiz(Map<String, dynamic> data) =>
+      _dio.post('/quiz/generate/', data: data, options: _generativeOptions);
+
+  Future<Response> getQuizHistory() => _dio.get('/quiz/history/');
+
+  Future<Response> getQuiz(int id) => _dio.get('/quiz/$id/');
+
+  Future<Response> gradeQuiz(Map<String, dynamic> data) =>
+      _dio.post('/quiz/grade/', data: data, options: _generativeOptions);
+
+  Future<Response> getQuizLatestAttempt(int quizId) =>
+      _dio.get('/quiz/attempts/latest/', queryParameters: {
+        'quiz_id': quizId,
+      });
+
+  // Eco-smart
+  Future<Response> ecoClassify(Map<String, dynamic> data) =>
+      _dio.post('/eco-smart/classify/', data: data, options: _ecoOptions);
+
+  Future<Response> ecoEstimate(Map<String, dynamic> data) =>
+      _dio.post('/eco-smart/estimate/', data: data, options: _ecoOptions);
+
+  Future<Response> ecoCluster(Map<String, dynamic> data) =>
+      _dio.post('/eco-smart/cluster/', data: data, options: _ecoOptions);
+
+  Future<Response> ecoNlp(Map<String, dynamic> data) =>
+      _dio.post('/eco-smart/nlp/', data: data, options: _ecoOptions);
+
+  Future<Response> ecoMultimodal(Map<String, dynamic> data) =>
+      _dio.post('/eco-smart/multimodal/', data: data, options: _ecoOptions);
+
+    Future<Response> getEcoCenters() => _dio.get('/eco-smart/centers/');
 }

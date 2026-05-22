@@ -1,0 +1,64 @@
+# ============================================================
+# Dockerfile.cloud — Eco-Smart Classifier API (Cloud Run)
+# ============================================================
+# Image optimisée pour Google Cloud Run (~400 Mo).
+# Contient uniquement FastAPI + modèle ML pour l'inférence.
+# ============================================================
+
+# ── Stage 1: Builder ─────────────────────────────────────────
+FROM python:3.11-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /build
+
+# Installer les dépendances dans un venv isolé
+COPY backend/requirements-cloud.txt ./requirements.txt
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# ── Stage 2: Runtime ─────────────────────────────────────────
+FROM python:3.11-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Copier le venv depuis le builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /app
+
+# Copier l'API FastAPI
+COPY backend/api_inference.py ./api_inference.py
+
+# Copier le modèle ML sérialisé
+COPY notebooks/multimodal_model.pkl ./model/multimodal_model.pkl
+
+# Copier le dataset de référence (nécessaire pour les stats de normalisation)
+COPY backend/dataset_ProjetML_2026.csv ./dataset_ProjetML_2026.csv
+
+# Variables d'environnement pour l'API
+ENV MODEL_PATH=/app/model/multimodal_model.pkl
+ENV DATASET_PATH=/app/dataset_ProjetML_2026.csv
+
+# Cloud Run injecte la variable PORT (défaut: 8080)
+ENV PORT=8080
+
+# Health check (Cloud Run + Docker)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT}/health')" || exit 1
+
+EXPOSE ${PORT}
+
+# Lancer avec gunicorn + uvicorn workers pour la production
+CMD exec gunicorn api_inference:app \
+    --bind 0.0.0.0:${PORT} \
+    --workers 1 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --timeout 120 \
+    --graceful-timeout 30 \
+    --access-logfile - \
+    --error-logfile -

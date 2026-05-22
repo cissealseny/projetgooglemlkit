@@ -15,12 +15,14 @@ class DashboardHomePage extends StatefulWidget {
   final VoidCallback onNavigateToVision;
   final VoidCallback onNavigateToNLP;
   final VoidCallback onNavigateToGenerative;
+  final VoidCallback? onNavigateToEcoSmart;
 
   const DashboardHomePage({
     super.key,
     required this.onNavigateToVision,
     required this.onNavigateToNLP,
     required this.onNavigateToGenerative,
+    this.onNavigateToEcoSmart,
   });
 
   @override
@@ -662,6 +664,17 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                   features: ['Chat', 'Text Gen', 'Code Gen', 'Embeddings'],
                   onTap: widget.onNavigateToGenerative,
                 ),
+                if (widget.onNavigateToEcoSmart != null)
+                  _buildFeatureCard(
+                    context,
+                    title: 'Eco-smart',
+                    description:
+                        'Classification des déchets, estimation de prix et clustering.',
+                    icon: Icons.eco_rounded,
+                    gradient: AppColors.ecoGradient,
+                    features: ['Classification', 'Prix', 'Clustering', 'NLP'],
+                    onTap: widget.onNavigateToEcoSmart!,
+                  ),
               ],
             );
           },

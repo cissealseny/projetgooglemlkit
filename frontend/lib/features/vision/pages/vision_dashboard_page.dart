@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
+import '../services/mlkit_vision_service.dart';
 
 /// Vision AI Dashboard Page with Modern Card Design
 class VisionDashboardPage extends StatefulWidget {
@@ -13,7 +14,9 @@ class VisionDashboardPage extends StatefulWidget {
 
 class _VisionDashboardPageState extends State<VisionDashboardPage> {
   final ImagePicker _picker = ImagePicker();
+  final MLKitVisionService _visionService = MLKitVisionService();
   Uint8List? _selectedImage;
+  String? _selectedImagePath;
   String? _selectedFeature;
   bool _isProcessing = false;
   Map<String, dynamic>? _result;
@@ -508,33 +511,64 @@ class _VisionDashboardPageState extends State<VisionDashboardPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _visionService.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       final bytes = await image.readAsBytes();
       setState(() {
         _selectedImage = bytes;
+        _selectedImagePath = image.path;
         _result = null;
       });
     }
   }
 
   Future<void> _processImage() async {
-    if (_selectedFeature == null || _selectedImage == null) return;
+    if (_selectedFeature == null || _selectedImagePath == null) return;
 
     setState(() => _isProcessing = true);
 
-    // Simulate processing
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      Map<String, dynamic> apiResult;
+      switch (_selectedFeature) {
+        case 'ocr':
+          apiResult = await _visionService.performOCR(_selectedImagePath!);
+          break;
+        case 'face':
+          apiResult = await _visionService.detectFaces(_selectedImagePath!);
+          break;
+        case 'object':
+          apiResult = await _visionService.detectObjects(_selectedImagePath!);
+          break;
+        case 'label':
+          apiResult = await _visionService.labelImage(_selectedImagePath!);
+          break;
+        case 'barcode':
+          apiResult = await _visionService.scanBarcodes(_selectedImagePath!);
+          break;
+        default:
+          throw Exception('Feature non supportée: $_selectedFeature');
+      }
 
-    setState(() {
-      _isProcessing = false;
-      _result = {
-        'feature': _selectedFeature,
-        'status': 'success',
-        'data': 'Sample result data...',
-      };
-    });
+      setState(() {
+        _isProcessing = false;
+        _result = apiResult;
+      });
+    } catch (e) {
+      setState(() {
+        _isProcessing = false;
+        _result = {
+          'success': false,
+          'error': e.toString(),
+        };
+      });
+    }
   }
 }
 

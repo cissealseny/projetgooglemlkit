@@ -1,0 +1,96 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'notebooks/multimodal_model.pkl'
+      - 'Dockerfile.cloud'
+  workflow_dispatch:  # Permet le déclenchement manuel
+
+env:
+  SERVICE_NAME: eco-smart-api
+  REGION: europe-west1
+
+jobs:
+  deploy:
+    name: Build & Deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    # Permissions pour Workload Identity Federation
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true  # Pour les fichiers volumineux (modèle .pkl)
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/eco-smart/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          docker build -f Dockerfile.cloud -t "${IMAGE}" .
+          docker push "${IMAGE}"
+          echo "IMAGE=${IMAGE}" >> $GITHUB_ENV
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE }}
+          flags: >-
+            --allow-unauthenticated
+            --port=8080
+            --memory=1Gi
+            --cpu=1
+            --timeout=120
+            --max-instances=3
+            --min-instances=0
+            --set-env-vars=MODEL_PATH=/app/model/multimodal_model.pkl,DATASET_PATH=/app/dataset_ProjetML_2026.csv
+
+      - name: Verify deployment
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format="value(status.url)")
+          echo "🌐 Service URL: ${SERVICE_URL}"
+
+          # Test health check
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SERVICE_URL}/health")
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Health check OK (HTTP ${HTTP_STATUS})"
+          else
+            echo "❌ Health check FAILED (HTTP ${HTTP_STATUS})"
+            exit 1
+          fi
+
+      - name: Post deployment URL
+        if: success()
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format="value(status.url)")
+          echo "## 🚀 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **API URL** | ${SERVICE_URL} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Docs** | ${SERVICE_URL}/docs |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Health** | ${SERVICE_URL}/health |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Image** | \`${{ env.IMAGE }}\` |" >> $GITHUB_STEP_SUMMARY

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/design_colors.dart';
 import '../theme/design_tokens.dart';
+import '../../features/generative/pages/chat_page.dart';
 
 /// Premium mobile-first shell with bottom navigation
 /// Features elegant floating tab bar with subtle animations
@@ -31,13 +32,10 @@ class _MobileShellState extends State<MobileShell>
         activeIcon: Icons.home_rounded,
         label: 'Accueil'),
     _NavItem(
-        icon: Icons.visibility_outlined,
-        activeIcon: Icons.visibility_rounded,
-        label: 'Vision'),
-    _NavItem(
-        icon: Icons.translate_outlined,
-        activeIcon: Icons.translate_rounded,
-        label: 'Langage'),
+      icon: Icons.location_on_outlined,
+      activeIcon: Icons.location_on_rounded,
+      label: 'Centres'),
+
     _NavItem(
         icon: Icons.auto_awesome_outlined,
         activeIcon: Icons.auto_awesome_rounded,
@@ -63,6 +61,35 @@ class _MobileShellState extends State<MobileShell>
     super.dispose();
   }
 
+  void _showEcoAssistantBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        final screenHeight = MediaQuery.of(context).size.height;
+        // Total available height excluding keyboard and status bar
+        final availableHeight = screenHeight - keyboardHeight - MediaQuery.of(context).viewPadding.top;
+        final sheetHeight = (screenHeight * 0.82).clamp(0.0, availableHeight);
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: keyboardHeight),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(DesignRadius.xl),
+              topRight: Radius.circular(DesignRadius.xl),
+            ),
+            child: SizedBox(
+              height: sheetHeight,
+              child: const ChatPage(isBottomSheet: true),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -71,7 +98,18 @@ class _MobileShellState extends State<MobileShell>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        body: widget.child,
+        body: Stack(
+          children: [
+            widget.child,
+            if (widget.currentIndex != 2)
+              _DraggableChatButton(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  _showEcoAssistantBottomSheet(context);
+                },
+              ),
+          ],
+        ),
         extendBody: true,
         bottomNavigationBar: Container(
           padding: EdgeInsets.only(
@@ -289,6 +327,128 @@ class MobilePageTransition extends StatelessWidget {
           curve: Curves.easeOut,
         )),
         child: child,
+      ),
+    );
+  }
+}
+
+class _DraggableChatButton extends StatefulWidget {
+  final VoidCallback onTap;
+
+  const _DraggableChatButton({required this.onTap});
+
+  @override
+  State<_DraggableChatButton> createState() => _DraggableChatButtonState();
+}
+
+class _DraggableChatButtonState extends State<_DraggableChatButton>
+    with SingleTickerProviderStateMixin {
+  Offset _position = const Offset(-1.0, -1.0);
+  late AnimationController _pulseController;
+  late Animation<double> _scaleAnimation;
+  bool _isDragging = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+    
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    
+    // Default position: bottom right, above the navigation bar
+    if (_position.dx == -1.0 && _position.dy == -1.0) {
+      _position = Offset(
+        size.width - 76.0, // 56 button width + 20 margin
+        size.height - 156.0 - bottomPadding, 
+      );
+    }
+
+    return Positioned(
+      left: _position.dx,
+      top: _position.dy,
+      child: GestureDetector(
+        onPanStart: (_) {
+          setState(() {
+            _isDragging = true;
+          });
+          HapticFeedback.selectionClick();
+        },
+        onPanUpdate: (details) {
+          setState(() {
+            double newX = _position.dx + details.delta.dx;
+            double newY = _position.dy + details.delta.dy;
+
+            // Constrain within screen boundaries
+            newX = newX.clamp(16.0, size.width - 72.0);
+            newY = newY.clamp(
+              MediaQuery.of(context).viewPadding.top + 16.0,
+              size.height - 100.0 - bottomPadding,
+            );
+
+            _position = Offset(newX, newY);
+          });
+        },
+        onPanEnd: (_) {
+          setState(() {
+            _isDragging = false;
+          });
+        },
+        onTap: () {
+          if (!_isDragging) {
+            widget.onTap();
+          }
+        },
+        child: AnimatedBuilder(
+          animation: _scaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _isDragging ? 0.95 : _scaleAnimation.value,
+              child: child,
+            );
+          },
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: DesignColors.generativeGradient,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: DesignColors.generative.withValues(alpha: 0.4),
+                  blurRadius: _isDragging ? 8 : 16,
+                  spreadRadius: _isDragging ? 1 : 2,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: Colors.white,
+              size: 26,
+            ),
+          ),
+        ),
       ),
     );
   }

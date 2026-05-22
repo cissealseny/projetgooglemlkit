@@ -11,18 +11,18 @@ import '../../features/auth/repository/auth_repository.dart';
 import '../../features/vision/bloc/vision_bloc.dart';
 import '../../features/vision/repository/vision_repository.dart';
 import '../../features/vision/services/mlkit_vision_service.dart';
-import '../../features/nlp/bloc/nlp_bloc.dart';
-import '../../features/nlp/repository/nlp_repository.dart';
-import '../../features/nlp/services/mlkit_nlp_service.dart';
 import '../../features/generative/bloc/generative_bloc.dart';
 import '../../features/generative/repository/generative_repository.dart';
 import '../../features/datahub/repository/datahub_repository.dart';
+import '../../features/quiz/repository/quiz_repository.dart';
+import '../../features/quiz/bloc/quiz_bloc.dart';
+import '../../features/eco_smart/repository/eco_smart_repository.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
-  final defaultBaseUrl =
-      kIsWeb ? 'http://127.0.0.1:8000/api/v1' : 'http://10.0.2.2:8000/api/v1';
+    final defaultBaseUrl =
+      kIsWeb ? 'http://127.0.0.1:8000/api/v1' : 'http://127.0.0.1:8000/api/v1';
 
   final apiBaseUrl = const bool.hasEnvironment('API_BASE_URL')
       ? const String.fromEnvironment('API_BASE_URL')
@@ -56,7 +56,6 @@ Future<void> configureDependencies() async {
 
   // Services
   getIt.registerLazySingleton<MLKitVisionService>(() => MLKitVisionService());
-  getIt.registerLazySingleton<MLKitNLPService>(() => MLKitNLPService());
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(
@@ -65,14 +64,17 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<VisionRepository>(
     () => VisionRepository(getIt<ApiClient>(), getIt<MLKitVisionService>()),
   );
-  getIt.registerLazySingleton<NLPRepository>(
-    () => NLPRepository(getIt<ApiClient>(), getIt<MLKitNLPService>()),
-  );
   getIt.registerLazySingleton<GenerativeRepository>(
     () => GenerativeRepository(getIt<ApiClient>()),
   );
   getIt.registerLazySingleton<DataHubRepository>(
     () => DataHubRepository(getIt<ApiClient>()),
+  );
+  getIt.registerLazySingleton<QuizRepository>(
+    () => QuizRepository(getIt<ApiClient>()),
+  );
+  getIt.registerLazySingleton<EcoSmartRepository>(
+    () => EcoSmartRepository(getIt<ApiClient>()),
   );
 
   // Blocs
@@ -80,8 +82,11 @@ Future<void> configureDependencies() async {
   getIt.registerFactory<VisionBloc>(
     () => VisionBloc(getIt<VisionRepository>()),
   );
-  getIt.registerFactory<NLPBloc>(() => NLPBloc(getIt<NLPRepository>()));
   getIt.registerFactory<GenerativeBloc>(
-    () => GenerativeBloc(getIt<GenerativeRepository>()),
+    () => GenerativeBloc(
+      getIt<GenerativeRepository>(),
+      getIt<QuizRepository>(),
+    ),
   );
+  getIt.registerFactory<QuizBloc>(() => QuizBloc(getIt<QuizRepository>()));
 }
